@@ -63,7 +63,8 @@ void HttpFun::slot_requestFinished()
     int nHttpCode = m_pNetworkReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();//http返回码
     if(nHttpCode == 200)//成功
     {
-       // qDebug()<<"这是一个测试"<<strResult;
+       qDebug()<<"To Hex:"<<resultContent.toHex();
+       qDebug()<<"String:"<<strResult;
         emit signal_requestFinished(true,strResult);//请求成功
          //纯文本显示
 

@@ -7,11 +7,12 @@
 #include <stdlib.h>
 #include <QObject>
 #include <QFile>
- #include <QTextStream>
+#include <QTextStream>
 #include "HttpFun.h"
 #include "mycom.h"
 #include "gethttpreturn.h"
-
+#define LOG_FILE_PATH "./bus_log.txt"
+#define ID_FILE_PATH "./busID.txt"
 
 
 /*
@@ -53,7 +54,7 @@ void outputMessage(QtMsgType type, const char *msg)
     }
     QString message = QString("[%1] %2 %3").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss ddd")).arg(text).arg(msg);
 
-    QFile file("/home/zsx/buslog.txt");
+    QFile file(LOG_FILE_PATH);
     if(file.open( QIODevice::WriteOnly | QIODevice::Append)==false)
     {
     }
@@ -72,7 +73,7 @@ void testEnv()
 {
 
 //test file
-  QFile file("./log.txt");
+  QFile file(LOG_FILE_PATH);
   if (file.exists()){
       //QMessageBox::information(this,"测试","文件存在");
   }else{
@@ -82,6 +83,16 @@ void testEnv()
 //test internet
    if(IPLive("115.239.211.112", 80))
        qDebug()<<"Test internet OK!!";
+   else
+       qDebug()<<"Test internet Failed!!";
 //Get device information
+   QFile fileID(ID_FILE_PATH);
+   if (fileID.exists()){
+       //QMessageBox::information(this,"测试","文件存在");
+   }else{
+       //QMessageBox::critical(this,"测试","文件不存在");
+
+   }
+
 }
 #endif // BUSPUBLIC_H
