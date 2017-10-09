@@ -4,6 +4,7 @@
 #include <QObject>
 #include <qdebug.h>
 #include <qlinkedlist.h>
+#include <QFile>
 #include "busline.h"
 #define GET_BUS_IFOR 1
 #define GET_SYS_TIME 2
@@ -18,12 +19,13 @@ public:
     QLinkedList <BusLine> lineList;
     void GetLines();
     void GetUrl(int cmdFlag);
-    void SetDevicePosition(QString deviceId,QString bufForword);
+    void SetDevicePosition();
     void SetSysTime();
     QString strInfor;
     QString strUrl;
     QString deviceID;
     QString busFd;
+    QString programVID;
 signals:
 
 public slots:

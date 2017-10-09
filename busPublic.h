@@ -11,8 +11,8 @@
 #include "HttpFun.h"
 #include "mycom.h"
 #include "gethttpreturn.h"
-#define LOG_FILE_PATH "./bus_log.txt"
-#define ID_FILE_PATH "./busID.txt"
+#define LOG_FILE_PATH "./busLOG"
+#define VERSION_FILE_PATH "./busV"
 
 
 /*
@@ -86,13 +86,7 @@ void testEnv()
    else
        qDebug()<<"Test internet Failed!!";
 //Get device information
-   QFile fileID(ID_FILE_PATH);
-   if (fileID.exists()){
-       //QMessageBox::information(this,"测试","文件存在");
-   }else{
-       //QMessageBox::critical(this,"测试","文件不存在");
 
-   }
 
 }
 #endif // BUSPUBLIC_H

@@ -1,8 +1,10 @@
 #include "gethttpreturn.h"
-
+//#include "busPublic.h"
+#define ID_FILE_PATH "./bus.cfg"
 GetHttpReturn::GetHttpReturn(QObject *parent) :
     QObject(parent)
 {
+    SetDevicePosition();
 }
 
 void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult)
@@ -44,10 +46,45 @@ void GetHttpReturn::SetSysTime()
     qDebug()<<"Get time from server SUCCESS"<<stime;
 
 }
-void GetHttpReturn::SetDevicePosition(QString deviceId,QString busForword)
+void GetHttpReturn::SetDevicePosition()
 {
-    deviceID=deviceId;
-    busFd=busForword;
+    QFile fileID(ID_FILE_PATH);
+    if (fileID.exists()){
+        //QMessageBox::information(this,"测试","文件存在");
+        if(fileID.open( QIODevice::ReadOnly)==false)
+        {
+            qDebug()<<"Error:Open config File Failed!";
+        }
+        else
+        {
+            qDebug()<<"Success:Open ID File OK!";
+            while(!fileID.atEnd()) {
+                QByteArray line = fileID.readLine();
+                QString str(line);
+                int i =-1;
+               // deviceID=str.simplified();
+               // newInfo->SetDevicePosition(str,"1");
+
+                if((i=str.indexOf("id"))>-1)
+                    deviceID=str.mid(i+3).simplified();
+                if((i=str.indexOf("forword"))>-1)
+                    busFd=str.mid(i+8).simplified();
+                if((i=str.indexOf("version"))>-1)
+                    programVID=str.mid(i+8).simplified();
+                 qDebug()<<"Line:"<< str<<"i="<<i;
+            }
+            qDebug()<<"Debug:Local device ID is"<<deviceID;
+            qDebug()<<"Debug:Local bus forword is"<<busFd;
+            qDebug()<<"Debug:Local program version is"<<programVID;
+            fileID.flush();
+            fileID.close();
+        }
+    }else{
+        //QMessageBox::critical(this,"测试","文件不存在");
+         qDebug()<<"Error:Can not find ID file!!";
+    }
+    //deviceID=deviceId.simplified();
+    //busFd=busForword;
 }
 void  GetHttpReturn::GetUrl(int cmdFlag)
 {
@@ -134,7 +171,7 @@ void  GetHttpReturn::GetLines()
 
     }
     foreach (BusLine x, lineList) {
-        qDebug()<<"Get from http Success!!--------------------------------------------------";
+        //qDebug()<<"Get from http Success!!--------------------------------------------------";
         qDebug()<<"intId"<<x.id;
         qDebug()<<x.MSG;
         //qDebug()<<"strBRNO"<<x.BRNO;
