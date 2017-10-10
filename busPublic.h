@@ -8,9 +8,9 @@
 #include <QObject>
 #include <QFile>
 #include <QTextStream>
-#include "HttpFun.h"
+ #include <QTimer>
 #include "mycom.h"
-#include "gethttpreturn.h"
+#include "mainfunction.h"
 #define LOG_FILE_PATH "./busLOG"
 #define VERSION_FILE_PATH "./busV"
 

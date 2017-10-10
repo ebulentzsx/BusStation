@@ -105,6 +105,9 @@ void  GetHttpReturn::GetUrl(int cmdFlag)
 }
 void  GetHttpReturn::GetLines()
 {
+    tempList.clear();
+    tempList=lineList;
+    lineList.clear();
     int i=0,j=0;
     QString key_model="model";
     QString key_BCNO="BCNO";
@@ -128,7 +131,7 @@ void  GetHttpReturn::GetLines()
     int intLSC;
     QString strModel=strInfor.mid(strInfor.indexOf(key_model)+8);
     j=strModel.indexOf(key_GetOne);
-      qDebug()<<"strModel"<<strModel;
+      //qDebug()<<"strModel"<<strModel;
     while(j>-1)
     {
     strModel=strModel.mid(j+1);
@@ -151,13 +154,23 @@ void  GetHttpReturn::GetLines()
     //intLSC=strLSC.mid(0,1).toInt();
     strLSC=strLSC.mid(0,1);
     BusLine tempLine ;
+    /*
+    tempLine.setID(intId);
+    tempLine.setBCNO(strBCNO);
+    tempLine.setBF(intBF);
+    tempLine.setBRNO(strBRNO);
+    tempLine.setLSC(intLSC);
+    tempLine.setCD(strCD);
+    tempLine.MSG=strBRNO+"--"+strBCNO+"--"+strLSC+"--"+strCD;
+    lineList.append(tempLine);
+    */
     tempLine.id=intId;
     tempLine.BCNO=strBCNO;
     tempLine.BusFoward=intBF;
     tempLine.BRNO=strBRNO;
     tempLine.LSC=intLSC;
     tempLine.CD=strCD;
-    tempLine.MSG=strBRNO+"--"+strBCNO+"--"+strLSC+"--"+strCD+"\n";
+    tempLine.MSG=strBRNO+"--"+strBCNO+"--"+strLSC+"--"+strCD;
     lineList.append(tempLine);
     j=strModel.indexOf(key_GetOne);
    /* qDebug()<<"---------------------------------------------------------------------------";
@@ -170,10 +183,15 @@ void  GetHttpReturn::GetLines()
     */
 
     }
+    int count_i=0;
+    while (count_i<tempList.count()) {
+        qDebug()<<"["<<count_i<<"]--new:"<<lineList.at(count_i).BRNO<<lineList.at(count_i).CD<<"---------old:"<<tempList.at(count_i).CD;
+        count_i++;
+    }
     foreach (BusLine x, lineList) {
         //qDebug()<<"Get from http Success!!--------------------------------------------------";
-        qDebug()<<"intId"<<x.id;
-        qDebug()<<x.MSG;
+        //qDebug()<<"intId"<<;
+       // qDebug()<<"["<<x.id<<"]"<<x.MSG;
         //qDebug()<<"strBRNO"<<x.BRNO;
        // qDebug()<<"strBCNO"<<x.BCNO;
         //qDebug()<<"intBF"<<x.BusFoward;
@@ -182,4 +200,8 @@ void  GetHttpReturn::GetLines()
        // qDebug()<<x.id;
     }
 
+}
+void GetHttpReturn::ClearTemp()
+{
+    lineList.clear();
 }

@@ -35,6 +35,8 @@ void HttpFun::sendRequest(const QString &strUrl)
     m_pNetworkReply = m_pNetworkManager->get(netRequest); //发起get请求
     connect(m_pNetworkReply,SIGNAL(finished()),this,SLOT(slot_requestFinished())); //请求完成信号
     m_pTimer->start(nHTTP_TIME);
+    qDebug()<<"请求 is going！";
+
 }
 
 //请求结束
@@ -63,8 +65,8 @@ void HttpFun::slot_requestFinished()
     int nHttpCode = m_pNetworkReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();//http返回码
     if(nHttpCode == 200)//成功
     {
-       qDebug()<<"To Hex:"<<resultContent.toHex();
-       qDebug()<<"String:"<<strResult;
+       //qDebug()<<"To Hex:"<<resultContent.toHex();
+       //qDebug()<<"String:"<<strResult;
         emit signal_requestFinished(true,strResult);//请求成功
          //纯文本显示
 
@@ -73,7 +75,7 @@ void HttpFun::slot_requestFinished()
     else
     {
         emit signal_requestFinished(false,strResult);//请求失败
-        qDebug()<<"请求失败！";
+        qDebug()<<"请求失败！----------request fail";
     }
     m_pNetworkReply->deleteLater();
     this->deleteLater(); //释放内存
@@ -87,3 +89,7 @@ void HttpFun::slot_requestTimeout()
     this->deleteLater();//释放内存
 }
 
+void HttpFun::slot_sendRequest(const QString &strUrl)
+{
+    sendRequest(strUrl);
+}

@@ -23,6 +23,8 @@ signals:
 public slots:
     void slot_requestFinished(); //http请求结束
     void slot_requestTimeout();  //请求超时
+    void slot_sendRequest(const QString& strUrl);
+
 
 private:
     QNetworkAccessManager* m_pNetworkManager;//网络管理类

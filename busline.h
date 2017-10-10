@@ -1,17 +1,27 @@
 #ifndef BUSLINE_H
 #define BUSLINE_H
 #include <QString>
+
 class BusLine
 {
+
 public:
     BusLine();
-    int id;
-    int BusFoward;  // back or forward
-    int LSC;  //left stations  2
-    QString BCNO; //BG4532
-    QString BRNO;//line name  325
-    QString CD;//distance  1800m
-    QString MSG;
+    int flag;
+    int id,id0;
+    int BusFoward,BusFoward0;  // back or forward
+    int LSC,LSC0;  //left stations  2
+    QString BCNO,BCNO0; //BG4532
+    QString BRNO,BRNO0;//line name  325
+    QString CD,CD0;//distance  1800m
+    QString MSG,MSG0;
+    void setID(int tmp);
+    void setBF(int tmp);
+    void setLSC(int tmp);
+    void setBCNO(QString tmp);
+    void setBRNO(QString tmp);
+    void setCD(QString tmp);
+    void setMSG(QString tmp);
     void GetOneLineFromString(QString strModel);
 };
 

@@ -23,7 +23,8 @@ SOURCES += main.cpp \
     readcomthread.cpp \
     gethttpreturn.cpp \
     busline.cpp \
-    busPublic.cpp
+    busPublic.cpp \
+    mainfunction.cpp
 
 HEADERS += \
     HttpFun.h \
@@ -33,4 +34,5 @@ HEADERS += \
     readcomthread.h \
     gethttpreturn.h \
     busline.h \
-    busPublic.h
+    busPublic.h \
+    mainfunction.h
