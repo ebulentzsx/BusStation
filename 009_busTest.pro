@@ -24,7 +24,8 @@ SOURCES += main.cpp \
     gethttpreturn.cpp \
     busline.cpp \
     busPublic.cpp \
-    mainfunction.cpp
+    mainfunction.cpp \
+    secondfunction.cpp
 
 HEADERS += \
     HttpFun.h \
@@ -35,4 +36,5 @@ HEADERS += \
     gethttpreturn.h \
     busline.h \
     busPublic.h \
-    mainfunction.h
+    mainfunction.h \
+    secondfunction.h

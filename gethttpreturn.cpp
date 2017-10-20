@@ -216,16 +216,16 @@ void GetHttpReturn::CompareInfo()
         if(x==0)
         {
 
-           if(i==test)
-             getCOM_buf(lineList.at(i));
-             qDebug()<<lineList.at(i).id<<"NO:UPDATE"<<lineList.at(i).BRNO<<lineList.at(i).CD<<"---------old:"<<tempList.at(i).CD;
+       //    if(i==1)
+           //  getCOM_buf(lineList.at(i));
+            // qDebug()<<lineList.at(i).id<<"NO:UPDATE"<<lineList.at(i).BRNO<<lineList.at(i).CD<<"---------old:"<<tempList.at(i).CD;
             i++;
             continue;
         }
         else
         {
-         //if(i==1)
-           // getCOM_buf(lineList.at(i));
+         if(i==2)
+           getCOM_buf(lineList.at(i));
              qDebug()<<lineList.at(i).id<<"UPDATE--new:"<<lineList.at(i).BRNO<<lineList.at(i).CD<<"---------old:"<<tempList.at(i).CD;
               i++;
         }

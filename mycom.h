@@ -28,6 +28,7 @@ signals:
     void signal_getState(const QString &strResult);
 public slots:
     void slot_getStateFromCom(const QString &tmp);
+    void slot_send_COM(QByteArray buf);
 };
 
 #endif // MYCOM_H

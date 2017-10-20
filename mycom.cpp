@@ -45,7 +45,7 @@ int myCOM::openCOM()
         flag_isOpen = false;
        return -1;
     }
-    qDebug()<<"Open COM end---";
+    //qDebug()<<"Open COM end---";
 }
 
 int myCOM::recvCOM()
@@ -55,8 +55,8 @@ int myCOM::recvCOM()
     {
 
         readThread->setCom(myCom);
-        readThread->run();
-        qDebug()<<"reading";
+        readThread->start();
+        //qDebug()<<"reading";
         ret = 0;
     }
     else{
@@ -118,6 +118,12 @@ void myCOM::getCurrentTime()
 void myCOM::slot_getStateFromCom(const QString &tmp)
 {
     emit signal_getState(tmp);
+    qDebug() <<"myCOM tmp"<<tmp;
+}
+
+void myCOM::slot_send_COM(QByteArray buf)
+{
+    sendCOM(buf);
 }
 
 void myCOM::closeCOM()

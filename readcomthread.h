@@ -5,7 +5,7 @@
 #include "posix_qextserialport.h"
 #include <QTextStream>
 #include <QCoreApplication>
-class readComThread : public QObject
+class readComThread : public QThread
 {
     Q_OBJECT
 private:

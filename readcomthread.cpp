@@ -2,10 +2,10 @@
 #include <QDebug>
 #include <QtCore>
 readComThread::readComThread(QObject *parent) :
-    QObject(parent)
+    QThread(parent)
 //readComThread::readComThread()
 {
-    qDebug() << QString("read thread id:Making") << QThread::currentThreadId();
+    qDebug() << QString("readthread class Making id:") << QThread::currentThreadId();
     stopRead=false;
 }
 
@@ -14,8 +14,8 @@ void readComThread::run()
 //exit conditions: flagstop=true or COM is closed
 {
 
-    qDebug()<<"running";
-    qDebug() << QString("readthread id:") << QThread::currentThreadId();
+   // qDebug()<<"running";
+    qDebug() << QString("read thread id:") << QThread::currentThreadId();
     QByteArray temp;
     while(1){
         //qDebug()<<"running in wihile in run"<<stopRead;
@@ -27,8 +27,9 @@ void readComThread::run()
         temp= readCom->readAll();
         if(!temp.isEmpty()){
             qDebug()<<"Read OK!";
-            qDebug()<<"Receive:"<<temp.toHex();
             emit signal_getStateFromCom(temp);
+            qDebug()<<"Receive:"<<temp.toHex();
+
             temp.clear();
         }
         //msleep(200);
