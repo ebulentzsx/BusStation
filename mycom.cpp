@@ -9,6 +9,7 @@ myCOM::myCOM(QObject *parent) :
     qDebug()<<"myCOM new OK!";
     readThread=new readComThread();
     QObject::connect(readThread,SIGNAL(signal_getStateFromCom(QString)), this, SLOT(slot_getStateFromCom(QString)));
+     QObject::connect(this,SIGNAL(signal_COM_error(bool)),this,SLOT(slot_re_open_COM(bool)));
 }
 
 void myCOM::setCOM()
@@ -42,6 +43,7 @@ int myCOM::openCOM()
     else
     {
         qDebug()<<"OpenCOM Fail!";
+
         flag_isOpen = false;
        return -1;
     }
@@ -76,6 +78,7 @@ int myCOM::sendCOM(QByteArray buf)
     else
     {
         qDebug()<<"COM is Closed!";
+        emit signal_COM_error(false);
         ret=-1;
     }
     return ret;
@@ -124,6 +127,13 @@ void myCOM::slot_getStateFromCom(const QString &tmp)
 void myCOM::slot_send_COM(QByteArray buf)
 {
     sendCOM(buf);
+}
+
+void myCOM::slot_re_open_COM(bool com_state)
+{
+   closeCOM();
+   openCOM();
+
 }
 
 void myCOM::closeCOM()

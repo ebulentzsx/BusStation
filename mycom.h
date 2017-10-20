@@ -26,9 +26,11 @@ public:
 signals:
     void signal_getErrorMsg(int code, const QString &strResult);
     void signal_getState(const QString &strResult);
+    void signal_COM_error(bool com_state);
 public slots:
     void slot_getStateFromCom(const QString &tmp);
     void slot_send_COM(QByteArray buf);
+    void slot_re_open_COM(bool com_state);
 };
 
 #endif // MYCOM_H
