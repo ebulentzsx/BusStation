@@ -25,25 +25,25 @@ void BusLine::setLSC(int tmp)
 
 void BusLine::setBCNO(QString tmp)
 {
-    BCNO0=BCNO;
+
     BCNO=tmp;
 }
 
 void BusLine::setBRNO(QString tmp)
 {
-    BRNO0=BRNO;
+
     BRNO=tmp;
 }
 
 void BusLine::setCD(QString tmp)
 {
-    CD0=CD;
+
     CD = tmp;
 }
 
 void BusLine::setMSG(QString tmp)
 {
-    MSG0=MSG;
+
     MSG=tmp;
 }
 

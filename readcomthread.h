@@ -5,19 +5,23 @@
 #include "posix_qextserialport.h"
 #include <QTextStream>
 #include <QCoreApplication>
-class readComThread : public QThread
+class readComThread : public QObject
 {
+    Q_OBJECT
 private:
 
 public:
+    //readComThread();
+    explicit readComThread(QObject *parent = 0);
     bool stopRead;//flag
     Posix_QextSerialPort *readCom;//com addr&information
 
-    readComThread();
+  //  QThread readCom();
     void run();//Start read from COM
     void setStop(); //Set flag to stop
     void setCom(Posix_QextSerialPort *com); //set com
-
+signals:
+    void signal_getStateFromCom(const QString &strResult);
 };
 
 #endif // READCOMTHREAD_H

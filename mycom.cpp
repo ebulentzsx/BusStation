@@ -1,11 +1,14 @@
 #include "mycom.h"
 #include <QTextCodec>
-myCOM::myCOM()
+myCOM::myCOM(QObject *parent) :
+    QObject(parent)
 {
     getCurrentTime();
     flag_isOpen =false;
     myCom = new Posix_QextSerialPort("/dev/ttyUSB0",QextSerialBase::Polling);
     qDebug()<<"myCOM new OK!";
+    readThread=new readComThread();
+    QObject::connect(readThread,SIGNAL(signal_getStateFromCom(QString)), this, SLOT(slot_getStateFromCom(QString)));
 }
 
 void myCOM::setCOM()
@@ -51,8 +54,8 @@ int myCOM::recvCOM()
     if(flag_isOpen)
     {
 
-        readThread.setCom(myCom);
-        readThread.start();
+        readThread->setCom(myCom);
+        readThread->run();
         qDebug()<<"reading";
         ret = 0;
     }
@@ -64,7 +67,7 @@ int myCOM::recvCOM()
 }
 int myCOM::sendCOM(QByteArray buf)
 {
-    int ret;
+    int ret=0;
     if(flag_isOpen)
     {
         ret =0 ;
@@ -75,13 +78,14 @@ int myCOM::sendCOM(QByteArray buf)
         qDebug()<<"COM is Closed!";
         ret=-1;
     }
+    return ret;
 }
 int myCOM::testCOM()
 {
     if(flag_isOpen==false)
     {
         qDebug() <<"COM is Closed!";
-        return 0;
+        return -1;
     }
     QByteArray buf;
     //QTextCodec* pCodec = QTextCodec::codecForName("GB2312");
@@ -100,7 +104,7 @@ int myCOM::testCOM()
     myCom->write(buf);
     //myCom->write("68 99 99 99 99 99 99 68 04 17 44 DD 35 34 65 63 64 6A 60 63 6B 60 64 64 53 63 64 6D 63 65 6D 68 66 81 16");
     qDebug() <<"myCOM::testCOM--Send:"<<buf;
-
+    return 0;
     //qDebug() <<"myCOM::testCOM--SendQByteArray:"<<buf0.toHex();
 
 }
@@ -109,6 +113,11 @@ void myCOM::getCurrentTime()
 {
     QDateTime time = QDateTime::currentDateTime();//获取系统现在的时间
     strTime = time.toString("yyyy-MM-dd hh:mm:ss ddd");
+}
+
+void myCOM::slot_getStateFromCom(const QString &tmp)
+{
+    emit signal_getState(tmp);
 }
 
 void myCOM::closeCOM()

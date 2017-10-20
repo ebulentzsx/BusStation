@@ -7,6 +7,7 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     testEnv();
     MainFunction *mm=new MainFunction();
+
     //mm->setSys_time();
     //QString strUrl = "http://113.108.61.26:10000/YiYangIndex.ashx?ActionKey=GBRDBDNO&deviceNumber=1314&busForward=1";
     //QString strUrl="http://113.108.61.26:10000/YiYangIndex.ashx?ActionKey=GCSDT";

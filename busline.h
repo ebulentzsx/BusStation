@@ -11,10 +11,10 @@ public:
     int id,id0;
     int BusFoward,BusFoward0;  // back or forward
     int LSC,LSC0;  //left stations  2
-    QString BCNO,BCNO0; //BG4532
-    QString BRNO,BRNO0;//line name  325
-    QString CD,CD0;//distance  1800m
-    QString MSG,MSG0;
+    QString BCNO; //BG4532
+    QString BRNO;//line name  325
+    QString CD;//distance  1800m
+    QString MSG;
     void setID(int tmp);
     void setBF(int tmp);
     void setLSC(int tmp);

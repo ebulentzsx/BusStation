@@ -6,10 +6,11 @@
 #include <qlinkedlist.h>
 #include <QFile>
 #include <QVector>
+#include <QThread>
 #include "busline.h"
 #define GET_BUS_IFOR 1
 #define GET_SYS_TIME 2
-#define SERVER_IP "http://113.108.61.26:10000/YiYangIndex.ashx?ActionKey="
+#define SERVER_IP "http://123.207.75.109:10000/YiYangIndex.ashx?ActionKey="
 /*
 typedef struct
 {
@@ -38,13 +39,15 @@ public:
     void SetDevicePosition();
     void SetSysTime();
     void ClearTemp();
+    void CompareInfo();
+    void getCOM_buf(BusLine newBus);
     QString strInfor;
     QString strUrl;
     QString deviceID;
     QString busFd;
     QString programVID;
 signals:
-
+    void signal_writeCom(const QString &strResult);
 public slots:
 
     void slot_requestFinished(bool bSuccess, const QString &strResult);

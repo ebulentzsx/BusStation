@@ -1,5 +1,6 @@
 #include "gethttpreturn.h"
 //#include "busPublic.h"
+ #include <QDateTime>
 #define ID_FILE_PATH "./bus.cfg"
 GetHttpReturn::GetHttpReturn(QObject *parent) :
     QObject(parent)
@@ -108,7 +109,7 @@ void  GetHttpReturn::GetLines()
     tempList.clear();
     tempList=lineList;
     lineList.clear();
-    int i=0,j=0;
+    int j=0;
     QString key_model="model";
     QString key_BCNO="BCNO";
     QString key_BRNO="BRNO";
@@ -153,6 +154,7 @@ void  GetHttpReturn::GetLines()
     strLSC=strModel.mid(strModel.indexOf(key_LSC)+5);
     //intLSC=strLSC.mid(0,1).toInt();
     strLSC=strLSC.mid(0,1);
+    intLSC=strLSC.toInt();
     BusLine tempLine ;
     /*
     tempLine.setID(intId);
@@ -183,12 +185,8 @@ void  GetHttpReturn::GetLines()
     */
 
     }
-    int count_i=0;
-    while (count_i<tempList.count()) {
-        qDebug()<<"["<<count_i<<"]--new:"<<lineList.at(count_i).BRNO<<lineList.at(count_i).CD<<"---------old:"<<tempList.at(count_i).CD;
-        count_i++;
-    }
-    foreach (BusLine x, lineList) {
+CompareInfo();
+   // foreach (BusLine x, lineList) {
         //qDebug()<<"Get from http Success!!--------------------------------------------------";
         //qDebug()<<"intId"<<;
        // qDebug()<<"["<<x.id<<"]"<<x.MSG;
@@ -198,10 +196,94 @@ void  GetHttpReturn::GetLines()
        // qDebug()<<"strCD"<<x.CD;
         //qDebug()<<"intLSC"<<x.LSC;
        // qDebug()<<x.id;
-    }
+    //}
 
 }
 void GetHttpReturn::ClearTemp()
 {
     lineList.clear();
 }
+
+void GetHttpReturn::CompareInfo()
+{
+    int i=0,x;
+    int seed = QDateTime::currentDateTime().time().second();
+    srand(seed);
+    int test =rand()%15;
+    while (i<tempList.count()) {
+
+        x=QString::compare(tempList.at(i).CD,lineList.at(i).CD);
+        if(x==0)
+        {
+
+           if(i==test)
+             getCOM_buf(lineList.at(i));
+             qDebug()<<lineList.at(i).id<<"NO:UPDATE"<<lineList.at(i).BRNO<<lineList.at(i).CD<<"---------old:"<<tempList.at(i).CD;
+            i++;
+            continue;
+        }
+        else
+        {
+         //if(i==1)
+           // getCOM_buf(lineList.at(i));
+             qDebug()<<lineList.at(i).id<<"UPDATE--new:"<<lineList.at(i).BRNO<<lineList.at(i).CD<<"---------old:"<<tempList.at(i).CD;
+              i++;
+        }
+        //msleep(100);
+
+    }
+}
+
+void GetHttpReturn::getCOM_buf(BusLine newBus)
+{
+    QByteArray buf,info;
+    buf.clear();
+    info.clear();
+    uint sum;
+    info.append(newBus.BRNO);
+    info.append("-");
+    info.append(newBus.BCNO);
+    info.append("-");
+    info.append(newBus.CD);
+    //info.append("-");
+    //info.append("-");
+
+    //info.append("/n");
+    uint len=info.length();
+    qDebug()<<"info.length:"<<len;
+    //int len=info.count();
+    qDebug()<<"Write the COM info:"<<info;
+   // int len=newBus.BRNO.length()+newBus.BCNO.length()+newBus.CD.length();
+    buf[0]=0x68;
+    for(int i=1;i<7;++i)
+        buf[i]=0x99;
+    buf[7]=0x68;
+    buf[8]=0x04;
+    buf[9]=1+2+len;
+    buf[10]=0x66;
+    buf[11]=0xdd;
+    buf[12]=0x34;
+    //waitting for further development
+    qDebug()<<"Go to write the COM";
+    //info.append(QString::number(newBus.id));
+    //info.append(" ");
+
+   // info.append(" ");
+
+    for(int j=0;j<len;++j)
+    {
+        buf[13+j]=(info[j]+0x33)%256;
+    }
+    for(int k=0;k<(13+len);++k)
+    {
+        sum=sum+buf[k];
+    }
+    buf[13+len]=sum%256;
+    buf[13+len+1]=0x16;
+    //deal the information of bus which update now
+    qDebug()<<"send to com"<<buf.toHex();
+    emit signal_writeCom(buf);
+    // emit signal_writeCom(0x6899999999999968041B44DD3469656A530903041EECDE07E3E9DEF5EA53E726060D6908F1C216);
+}
+
+

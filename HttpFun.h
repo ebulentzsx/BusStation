@@ -9,8 +9,9 @@
 #include <QSslConfiguration>
 #include <QString>
 #include <QByteArray>
-#define MY_GB2312 1
+//#define MY_GB2312 1
 //#define MY_UTF8 1
+#define NOINCODE 1
 //http请求类
 class HttpFun : public QObject
 {
