@@ -19,7 +19,7 @@ void BusLine::setBF(int tmp)
 
 void BusLine::setLSC(int tmp)
 {
-    LSC0=LSC;
+
     LSC=tmp;
 }
 

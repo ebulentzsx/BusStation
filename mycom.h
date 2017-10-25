@@ -2,6 +2,7 @@
 #define MYCOM_H
 #include <QtCore>
 #include <QObject>
+ #include <QMutex>
 #include "qextserialbase.h"
 #include "posix_qextserialport.h"
 #include "readcomthread.h"
@@ -15,6 +16,7 @@ public:
     Posix_QextSerialPort *myCom;
     QString strTime;
     bool flag_isOpen;
+    QMutex writeLock;
   //  myCOM();
     void setCOM();//Setting
     int openCOM();//Open COM and create new thread
@@ -23,6 +25,7 @@ public:
     int testCOM();
     void closeCOM();
     void getCurrentTime();
+    void run();
 signals:
     void signal_getErrorMsg(int code, const QString &strResult);
     void signal_getState(const QString &strResult);
@@ -31,6 +34,7 @@ public slots:
     void slot_getStateFromCom(const QString &tmp);
     void slot_send_COM(QByteArray buf);
     void slot_re_open_COM(bool com_state);
+    void slot_init();
 };
 
 #endif // MYCOM_H

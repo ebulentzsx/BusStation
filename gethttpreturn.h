@@ -8,6 +8,7 @@
 #include <QVector>
 #include <QThread>
 #include "busline.h"
+#include "devicesetting.h"
 #define GET_BUS_IFOR 1
 #define GET_SYS_TIME 2
 #define SERVER_IP "http://123.207.75.109:10000/YiYangIndex.ashx?ActionKey="
@@ -41,15 +42,16 @@ public:
     void ClearTemp();
     void CompareInfo();
     void getCOM_buf(BusLine newBus);
+    void addActionKey();
     QString strInfor;
     QString strUrl;
-    QString deviceID;
-    QString busFd;
-    QString programVID;
+    //QString deviceID;
+    //QString busFd;
+    //QString programVID;
 signals:
     void signal_writeCom(const QString &strResult);
 public slots:
-
+    //void slot_get_allstatus();
     void slot_requestFinished(bool bSuccess, const QString &strResult);
 
 };

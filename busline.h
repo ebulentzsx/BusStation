@@ -10,7 +10,7 @@ public:
     int flag;
     int id,id0;
     int BusFoward,BusFoward0;  // back or forward
-    int LSC,LSC0;  //left stations  2
+    int LSC;  //left stations  2
     QString BCNO; //BG4532
     QString BRNO;//line name  325
     QString CD;//distance  1800m

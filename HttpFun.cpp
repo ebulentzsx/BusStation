@@ -1,7 +1,7 @@
 #include "HttpFun.h"
 #include <QTextCodec>
 #include <qdebug.h>
-const int nHTTP_TIME = 10000; //10秒
+const int nHTTP_TIME = 2000; //10秒
 
 HttpFun::HttpFun(QObject *parent) :
     QObject(parent)
@@ -35,7 +35,7 @@ void HttpFun::sendRequest(const QString &strUrl)
     m_pNetworkReply = m_pNetworkManager->get(netRequest); //发起get请求
     connect(m_pNetworkReply,SIGNAL(finished()),this,SLOT(slot_requestFinished())); //请求完成信号
     m_pTimer->start(nHTTP_TIME);
-    qDebug()<<"request is going！";
+   // qDebug()<<"request is going";
 
 }
 

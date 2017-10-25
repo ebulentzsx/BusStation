@@ -25,7 +25,8 @@ SOURCES += main.cpp \
     busline.cpp \
     busPublic.cpp \
     mainfunction.cpp \
-    secondfunction.cpp
+    secondfunction.cpp \
+    devicesetting.cpp
 
 HEADERS += \
     HttpFun.h \
@@ -37,4 +38,5 @@ HEADERS += \
     busline.h \
     busPublic.h \
     mainfunction.h \
-    secondfunction.h
+    secondfunction.h \
+    devicesetting.h

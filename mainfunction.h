@@ -15,14 +15,17 @@ public:
     HttpFun *pHttpFun;
     GetHttpReturn *newInfo;
     QTimer *timer;
-    myCOM *my_com;
-    secondFunction *dealComInfo;
+
+    //secondFunction *dealComInfo;
     void setSys_time();
     void beginLoop();
+    void run();
 
 signals:
     void signal_sendRequest(const QString& strUrl);
     void signal_send_COM(QByteArray buf);
+    void signal_init_COM();
+    void signal_init_watch();
 public slots:
     void slot_sendRequest();
     void slot_writeCom(const QString& strResult);

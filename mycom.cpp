@@ -1,22 +1,24 @@
 #include "mycom.h"
 #include <QTextCodec>
 myCOM::myCOM(QObject *parent) :
-    QObject(parent)
+     QObject(parent)
 {
+
     getCurrentTime();
     flag_isOpen =false;
     myCom = new Posix_QextSerialPort("/dev/ttyUSB0",QextSerialBase::Polling);
-    qDebug()<<"myCOM new OK!";
+
     readThread=new readComThread();
     QObject::connect(readThread,SIGNAL(signal_getStateFromCom(QString)), this, SLOT(slot_getStateFromCom(QString)));
-     QObject::connect(this,SIGNAL(signal_COM_error(bool)),this,SLOT(slot_re_open_COM(bool)));
+
+    QObject::connect(this,SIGNAL(signal_COM_error(bool)),this,SLOT(slot_re_open_COM(bool)));
 }
 
 void myCOM::setCOM()
 {
 
     qDebug()<<"SetCOM OK!";
-    myCom->setBaudRate(BAUD115200);          //波特率设置，我们设置为9600
+    myCom->setBaudRate(BAUD115200);          //波特率设置，我们设置为115200
     myCom->setDataBits(DATA_8);            //数据位设置，我们设置为8位数据位
     myCom->setParity(PAR_NONE);           //奇偶校验设置，我们设置为无校验
     myCom->setStopBits(STOP_1);            //停止位设置，我们设置为1位停止位
@@ -32,7 +34,7 @@ int myCOM::openCOM()
         qDebug()<<"Already Open COM!";
         return 0;
     }
-    if(myCom->open(QIODevice::ReadWrite))
+    if(myCom->open(QIODevice::ReadWrite|QIODevice::Truncate))
     {
         qDebug()<<"OpenCOM OK!";
         //readComThread readThread;
@@ -70,10 +72,19 @@ int myCOM::recvCOM()
 int myCOM::sendCOM(QByteArray buf)
 {
     int ret=0;
+    writeLock.lock();
+    QByteArray tmp;
+    tmp.append(buf);
     if(flag_isOpen)
     {
         ret =0 ;
-        myCom->write(buf);
+        myCom->write(tmp);
+        myCom->flush();
+        qDebug() << "----------tmp"<<tmp.toHex();
+        //sleep(1);
+        qDebug() << "----------buf"<<buf.toHex();
+
+
     }
     else
     {
@@ -81,7 +92,10 @@ int myCOM::sendCOM(QByteArray buf)
         emit signal_COM_error(false);
         ret=-1;
     }
+      qDebug() << QString("-----------slot in mycom thread id:sendCOM") << QThread::currentThreadId();
+      writeLock.unlock();
     return ret;
+
 }
 int myCOM::testCOM()
 {
@@ -118,15 +132,24 @@ void myCOM::getCurrentTime()
     strTime = time.toString("yyyy-MM-dd hh:mm:ss ddd");
 }
 
+
+
 void myCOM::slot_getStateFromCom(const QString &tmp)
 {
-    emit signal_getState(tmp);
-    qDebug() <<"myCOM tmp"<<tmp;
+    qDebug() << QString("slot in mycom thread id:get state") << QThread::currentThreadId();
+    QByteArray info;
+    info.append(tmp);
+     if ((info[0] == 0x68)&&(info[7] == 0x68)&&(info[8] == 0x81))
+         emit signal_getState(tmp);
+
+         qDebug() <<"signal was sent from mycom"<<tmp;
 }
 
 void myCOM::slot_send_COM(QByteArray buf)
 {
+    qDebug() << QString("-----------slot in mycom thread id:::slot_send_COM") << QThread::currentThreadId();
     sendCOM(buf);
+
 }
 
 void myCOM::slot_re_open_COM(bool com_state)
@@ -134,6 +157,14 @@ void myCOM::slot_re_open_COM(bool com_state)
    closeCOM();
    openCOM();
 
+}
+
+void myCOM::slot_init()
+{
+    setCOM();
+    openCOM();
+    recvCOM();
+    qDebug() << QString("slot in myCOM thread id:slot_init") << QThread::currentThreadId();
 }
 
 void myCOM::closeCOM()

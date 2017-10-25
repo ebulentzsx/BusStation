@@ -67,18 +67,20 @@ void GetHttpReturn::SetDevicePosition()
                // newInfo->SetDevicePosition(str,"1");
 
                 if((i=str.indexOf("id"))>-1)
-                    deviceID=str.mid(i+3).simplified();
+                    DeviceSetting::deviceID=str.mid(i+3).simplified();
                 if((i=str.indexOf("forword"))>-1)
-                    busFd=str.mid(i+8).simplified();
+                    DeviceSetting::busFd=str.mid(i+8).simplified();
                 if((i=str.indexOf("version"))>-1)
-                    programVID=str.mid(i+8).simplified();
-                 qDebug()<<"Line:"<< str<<"i="<<i;
+                    DeviceSetting::programVID=str.mid(i+8).simplified();
+                 //qDebug()<<"Line:"<< str<<"i="<<i;
             }
-            qDebug()<<"Debug:Local device ID is"<<deviceID;
-            qDebug()<<"Debug:Local bus forword is"<<busFd;
-            qDebug()<<"Debug:Local program version is"<<programVID;
+            //qDebug()<<"Debug:Local device ID is"<<DeviceSetting::deviceID;
+            //qDebug()<<"Debug:Local bus forword is"<<DeviceSetting::busFd;
+            //qDebug()<<"Debug:Local program version is"<<DeviceSetting::programVID;
             fileID.flush();
             fileID.close();
+            addActionKey();
+            qDebug()<<"Set device finisheds";
         }
     }else{
         //QMessageBox::critical(this,"测试","文件不存在");
@@ -93,7 +95,8 @@ void  GetHttpReturn::GetUrl(int cmdFlag)
     strUrl.clear();
     switch (cmdFlag) {
     case GET_BUS_IFOR:
-        strUrl= SERVER_IP+QString( "GBRDBDNO&deviceNumber=%1&busForward=%2").arg(deviceID).arg(busFd);
+        //strUrl= SERVER_IP+QString( "GBRDBDNO&deviceNumber=%1&busForward=%2").arg(deviceID).arg(busFd);
+        strUrl= SERVER_IP+QString( "GBRDBDNO&deviceNumber=%1").arg(DeviceSetting::deviceID);
         break;
     case GET_SYS_TIME:
         strUrl= SERVER_IP+QString("GCSDT");
@@ -185,7 +188,7 @@ void  GetHttpReturn::GetLines()
     */
 
     }
-CompareInfo();
+   CompareInfo();
    // foreach (BusLine x, lineList) {
         //qDebug()<<"Get from http Success!!--------------------------------------------------";
         //qDebug()<<"intId"<<;
@@ -207,10 +210,15 @@ void GetHttpReturn::ClearTemp()
 void GetHttpReturn::CompareInfo()
 {
     int i=0,x;
-    int seed = QDateTime::currentDateTime().time().second();
-    srand(seed);
-    int test =rand()%15;
-    while (i<tempList.count()) {
+    int new_count,tmp_count;
+    new_count = lineList.count();
+    tmp_count = tempList.count();
+    if(new_count<tmp_count)
+    {
+        qDebug()<<"Refresh from server ERROR!!";
+        return;
+    }
+    while (i<tmp_count) {
 
         x=QString::compare(tempList.at(i).CD,lineList.at(i).CD);
         if(x==0)
@@ -218,15 +226,16 @@ void GetHttpReturn::CompareInfo()
 
        //    if(i==1)
            //  getCOM_buf(lineList.at(i));
-            // qDebug()<<lineList.at(i).id<<"NO:UPDATE"<<lineList.at(i).BRNO<<lineList.at(i).CD<<"---------old:"<<tempList.at(i).CD;
+             //qDebug()<<lineList.at(i).id<<"NO:UPDATE"<<lineList.at(i).BRNO<<lineList.at(i).CD<<"---------old:"<<tempList.at(i).CD;
             i++;
             continue;
         }
         else
         {
-         if(i==2)
+            qDebug()<<lineList.at(i).id<<"UPDATE--new:"<<lineList.at(i).BRNO<<lineList.at(i).CD<<"---------old:"<<tempList.at(i).CD;
+         if(i==5)
            getCOM_buf(lineList.at(i));
-             qDebug()<<lineList.at(i).id<<"UPDATE--new:"<<lineList.at(i).BRNO<<lineList.at(i).CD<<"---------old:"<<tempList.at(i).CD;
+
               i++;
         }
         //msleep(100);
@@ -242,17 +251,32 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
     uint sum;
     info.append(newBus.BRNO);
     info.append("-");
-    info.append(newBus.BCNO);
+    //info.append(newBus.BCNO);
+    info.append(0xca);
+    info.append(0xa3);
+
+    info.append(QString::number(newBus.LSC));
+    info.append(0xd5);
+    info.append(0xbe);
     info.append("-");
     info.append(newBus.CD);
+    if(newBus.CD.length()<7)
+    {
+    info.append(0xc3);
+    info.append(0xd7);//m
+    }
+    //D5BE zhan
+    //CAA3 sheng
+
+    //info.right()
     //info.append("-");
     //info.append("-");
 
     //info.append("/n");
     uint len=info.length();
-    qDebug()<<"info.length:"<<len;
+    //qDebug()<<"info.length:"<<len;
     //int len=info.count();
-    qDebug()<<"Write the COM info:"<<info;
+   qDebug()<<"Write the COM info:"<<info;
    // int len=newBus.BRNO.length()+newBus.BCNO.length()+newBus.CD.length();
     buf[0]=0x68;
     for(int i=1;i<7;++i)
@@ -264,7 +288,7 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
     buf[11]=0xdd;
     buf[12]=0x34;
     //waitting for further development
-    qDebug()<<"Go to write the COM";
+    //qDebug()<<"Go to write the COM";
     //info.append(QString::number(newBus.id));
     //info.append(" ");
 
@@ -281,9 +305,27 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
     buf[13+len]=sum%256;
     buf[13+len+1]=0x16;
     //deal the information of bus which update now
-    qDebug()<<"send to com"<<buf.toHex();
-    emit signal_writeCom(buf);
+    qDebug()<<"send to com:getCOM_buf"<<buf.toHex();
+    emit signal_writeCom(buf);//send to COM
     // emit signal_writeCom(0x6899999999999968041B44DD3469656A530903041EECDE07E3E9DEF5EA53E726060D6908F1C216);
 }
+
+void GetHttpReturn::addActionKey()
+{
+    DeviceSetting::actionKey.append("GBRDBDNO");
+    DeviceSetting::actionKey.append("GCSDT");
+    DeviceSetting::actionKey.append("ADDSELOG");
+    DeviceSetting::actionKey.append("ADDSBLOG");
+    DeviceSetting::actionKey.append("ADDLEDLOG");
+    DeviceSetting::actionKey.append("ADDCTRLLOG");
+    DeviceSetting::actionKey.append("ADDBATTERYLOG");
+    DeviceSetting::actionKey.append("UDSBNO");
+    DeviceSetting::actionKey.append("USMS");
+    DeviceSetting::actionKey.append("GUGBDN");
+    DeviceSetting::actionKey.append("UUGBDN");
+}
+
+
+
 
 
