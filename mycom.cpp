@@ -9,7 +9,7 @@ myCOM::myCOM(QObject *parent) :
     myCom = new Posix_QextSerialPort("/dev/ttyUSB0",QextSerialBase::Polling);
 
     readThread=new readComThread();
-    QObject::connect(readThread,SIGNAL(signal_getStateFromCom(QString)), this, SLOT(slot_getStateFromCom(QString)));
+    //QObject::connect(readThread,SIGNAL(signal_getStateFromCom(QString)), this, SLOT(slot_getStateFromCom(QString)));
 
     QObject::connect(this,SIGNAL(signal_COM_error(bool)),this,SLOT(slot_re_open_COM(bool)));
 }
@@ -149,6 +149,17 @@ void myCOM::slot_send_COM(QByteArray buf)
 {
     qDebug() << QString("-----------slot in mycom thread id:::slot_send_COM") << QThread::currentThreadId();
     sendCOM(buf);
+    QByteArray temp;
+    temp.clear();
+    while(temp.isEmpty()){
+        //qDebug()<<"running in wihile in run"<<stopRead;
+        temp= myCom->readAll();
+    }
+    qDebug()<<"Read OK!Receive:"<<temp.toHex();
+    //emit signal_getStateFromCom(temp);
+    emit signal_getState(temp);
+    temp.clear();
+
 
 }
 
@@ -163,7 +174,7 @@ void myCOM::slot_init()
 {
     setCOM();
     openCOM();
-    recvCOM();
+    //recvCOM();
     qDebug() << QString("slot in myCOM thread id:slot_init") << QThread::currentThreadId();
 }
 
