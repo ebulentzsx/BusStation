@@ -6,6 +6,7 @@
 #include "qextserialbase.h"
 #include "posix_qextserialport.h"
 #include "readcomthread.h"
+#include "devicesetting.h"
 #include <QCoreApplication>
 class myCOM : public QObject
 {

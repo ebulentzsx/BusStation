@@ -37,12 +37,12 @@ public:
     //QVector<QString> vector(200);
     void GetLines();
     void GetUrl(int cmdFlag);
-    void SetDevicePosition();
+    //void SetDevicePosition();
     void SetSysTime();
     void ClearTemp();
     void CompareInfo();
     void getCOM_buf(BusLine newBus);
-    void addActionKey();
+    //void addActionKey();
     QString strInfor;
     QString strUrl;
     //QString deviceID;

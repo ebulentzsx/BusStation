@@ -6,7 +6,7 @@ myCOM::myCOM(QObject *parent) :
 
     getCurrentTime();
     flag_isOpen =false;
-    myCom = new Posix_QextSerialPort("/dev/ttyUSB0",QextSerialBase::Polling);
+    myCom = new Posix_QextSerialPort(DeviceSetting::usbSet,QextSerialBase::Polling);
 
     readThread=new readComThread();
     //QObject::connect(readThread,SIGNAL(signal_getStateFromCom(QString)), this, SLOT(slot_getStateFromCom(QString)));
@@ -78,11 +78,13 @@ int myCOM::sendCOM(QByteArray buf)
     if(flag_isOpen)
     {
         ret =0 ;
+         qDebug() << "!!---------myCom->isWritable"<<myCom->isWritable();
         myCom->write(tmp);
+
         myCom->flush();
-        qDebug() << "----------tmp"<<tmp.toHex();
+        //qDebug() << "----------tmp"<<tmp.toHex();
         //sleep(1);
-        qDebug() << "----------buf"<<buf.toHex();
+        //qDebug() << "----------buf"<<buf.toHex();
 
 
     }
@@ -136,13 +138,7 @@ void myCOM::getCurrentTime()
 
 void myCOM::slot_getStateFromCom(const QString &tmp)
 {
-    qDebug() << QString("slot in mycom thread id:get state") << QThread::currentThreadId();
-    QByteArray info;
-    info.append(tmp);
-     if ((info[0] == 0x68)&&(info[7] == 0x68)&&(info[8] == 0x81))
-         emit signal_getState(tmp);
 
-         qDebug() <<"signal was sent from mycom"<<tmp;
 }
 
 void myCOM::slot_send_COM(QByteArray buf)
@@ -152,13 +148,13 @@ void myCOM::slot_send_COM(QByteArray buf)
     QByteArray temp;
     temp.clear();
     while(temp.isEmpty()){
-        //qDebug()<<"running in wihile in run"<<stopRead;
+        qDebug()<<"------------running in wihile in watiing com return";
         temp= myCom->readAll();
     }
-    qDebug()<<"Read OK!Receive:"<<temp.toHex();
+    qDebug()<<"-------------Read OK!Receive:"<<temp.toHex();
     //emit signal_getStateFromCom(temp);
     emit signal_getState(temp);
-    temp.clear();
+
 
 
 }

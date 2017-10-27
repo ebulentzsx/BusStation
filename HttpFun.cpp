@@ -1,7 +1,8 @@
 #include "HttpFun.h"
 #include <QTextCodec>
 #include <qdebug.h>
-const int nHTTP_TIME = 2000; //10秒
+#define HTTPS 0
+const int nHTTP_TIME = 5000; //10秒
 
 HttpFun::HttpFun(QObject *parent) :
     QObject(parent)
@@ -19,6 +20,7 @@ void HttpFun::sendRequest(const QString &strUrl)
     QNetworkRequest netRequest;
     netRequest.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
     netRequest.setUrl(QUrl(strUrl)); //地址信息
+#if HTTPS
     if(strUrl.toLower().startsWith("https"))//https请求，需ssl支持(下载openssl拷贝libeay32.dll和ssleay32.dll文件至Qt bin目录或程序运行目录)
     {
         QSslConfiguration sslConfig;
@@ -28,6 +30,7 @@ void HttpFun::sendRequest(const QString &strUrl)
         sslConfig.setProtocol(QSsl::TlsV1);
         netRequest.setSslConfiguration(sslConfig);
     }
+#endif
 //    QString strBody; //http body部分，可封装参数信息
 //    QByteArray contentByteArray = strBody.toLatin1();//转成二进制
 //    m_pNetworkReply = m_pNetworkManager->post(netRequest,contentByteArray);//发起post请求

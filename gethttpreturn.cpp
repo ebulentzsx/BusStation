@@ -1,11 +1,11 @@
 #include "gethttpreturn.h"
 //#include "busPublic.h"
  #include <QDateTime>
-#define ID_FILE_PATH "./bus.cfg"
+
 GetHttpReturn::GetHttpReturn(QObject *parent) :
     QObject(parent)
 {
-    SetDevicePosition();
+
 }
 
 void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult)
@@ -47,48 +47,7 @@ void GetHttpReturn::SetSysTime()
     qDebug()<<"Get time from server SUCCESS"<<stime;
 
 }
-void GetHttpReturn::SetDevicePosition()
-{
-    QFile fileID(ID_FILE_PATH);
-    if (fileID.exists()){
-        //QMessageBox::information(this,"测试","文件存在");
-        if(fileID.open( QIODevice::ReadOnly)==false)
-        {
-            qDebug()<<"Error:Open config File Failed!";
-        }
-        else
-        {
-            qDebug()<<"Success:Open ID File OK!";
-            while(!fileID.atEnd()) {
-                QByteArray line = fileID.readLine();
-                QString str(line);
-                int i =-1;
-               // deviceID=str.simplified();
-               // newInfo->SetDevicePosition(str,"1");
 
-                if((i=str.indexOf("id"))>-1)
-                    DeviceSetting::deviceID=str.mid(i+3).simplified();
-                if((i=str.indexOf("forword"))>-1)
-                    DeviceSetting::busFd=str.mid(i+8).simplified();
-                if((i=str.indexOf("version"))>-1)
-                    DeviceSetting::programVID=str.mid(i+8).simplified();
-                 //qDebug()<<"Line:"<< str<<"i="<<i;
-            }
-            //qDebug()<<"Debug:Local device ID is"<<DeviceSetting::deviceID;
-            //qDebug()<<"Debug:Local bus forword is"<<DeviceSetting::busFd;
-            //qDebug()<<"Debug:Local program version is"<<DeviceSetting::programVID;
-            fileID.flush();
-            fileID.close();
-            addActionKey();
-            qDebug()<<"Set device finisheds";
-        }
-    }else{
-        //QMessageBox::critical(this,"测试","文件不存在");
-         qDebug()<<"Error:Can not find ID file!!";
-    }
-    //deviceID=deviceId.simplified();
-    //busFd=busForword;
-}
 void  GetHttpReturn::GetUrl(int cmdFlag)
 {
     //QString strUrl = "http://113.108.61.26:10000/YiYangIndex.ashx?ActionKey=GBRDBDNO&deviceNumber=1314&busForward=1";
@@ -248,7 +207,7 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
     QByteArray buf,info;
     buf.clear();
     info.clear();
-    uint sum;
+    u_int8_t sum;
     info.append(newBus.BRNO);
     info.append("-");
     //info.append(newBus.BCNO);
@@ -286,7 +245,7 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
     buf[9]=1+2+len;
     buf[10]=0x66;
     buf[11]=0xdd;
-    buf[12]=0x34;
+    buf[12]=0x34;//number of screen
     //waitting for further development
     //qDebug()<<"Go to write the COM";
     //info.append(QString::number(newBus.id));
@@ -300,9 +259,9 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
     }
     for(int k=0;k<(13+len);++k)
     {
-        sum=sum+buf[k];
+        sum=(sum+buf[k])%256;
     }
-    buf[13+len]=sum%256;
+    buf[13+len]=sum;
     buf[13+len+1]=0x16;
     //deal the information of bus which update now
     qDebug()<<"send to com:getCOM_buf"<<buf.toHex();
@@ -310,20 +269,6 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
     // emit signal_writeCom(0x6899999999999968041B44DD3469656A530903041EECDE07E3E9DEF5EA53E726060D6908F1C216);
 }
 
-void GetHttpReturn::addActionKey()
-{
-    DeviceSetting::actionKey.append("GBRDBDNO");
-    DeviceSetting::actionKey.append("GCSDT");
-    DeviceSetting::actionKey.append("ADDSELOG");
-    DeviceSetting::actionKey.append("ADDSBLOG");
-    DeviceSetting::actionKey.append("ADDLEDLOG");
-    DeviceSetting::actionKey.append("ADDCTRLLOG");
-    DeviceSetting::actionKey.append("ADDBATTERYLOG");
-    DeviceSetting::actionKey.append("UDSBNO");
-    DeviceSetting::actionKey.append("USMS");
-    DeviceSetting::actionKey.append("GUGBDN");
-    DeviceSetting::actionKey.append("UUGBDN");
-}
 
 
 

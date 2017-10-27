@@ -8,7 +8,8 @@
 #include <QObject>
 #include <QFile>
 #include <QTextStream>
- #include <QTimer>
+#include <QTimer>
+ #include <QTcpSocket>
 #include "mycom.h"
 #include "mainfunction.h"
 #include "devicesetting.h"

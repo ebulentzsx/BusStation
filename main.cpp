@@ -8,6 +8,8 @@ int main(int argc, char *argv[])
     //qInstallMsgHandler(outputMessage);
 
     //DeviceSetting busDev;
+    DeviceSetting my_Bus;
+    my_Bus.initDevice();
     myCOM *my_com;
     my_com=new myCOM();
     secondFunction *watch_function;
