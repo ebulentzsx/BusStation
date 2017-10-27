@@ -1,11 +1,11 @@
 #include "gethttpreturn.h"
-//#include "busPublic.h"
  #include <QDateTime>
 
+bool GetHttpReturn::deal_one_finish=true;
 GetHttpReturn::GetHttpReturn(QObject *parent) :
     QObject(parent)
 {
-
+    deal_all_finish=true;
 }
 
 void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult)
@@ -177,6 +177,7 @@ void GetHttpReturn::CompareInfo()
         qDebug()<<"Refresh from server ERROR!!";
         return;
     }
+    deal_all_finish=false;
     while (i<tmp_count) {
 
         x=QString::compare(tempList.at(i).CD,lineList.at(i).CD);
@@ -192,7 +193,7 @@ void GetHttpReturn::CompareInfo()
         else
         {
             qDebug()<<lineList.at(i).id<<"UPDATE--new:"<<lineList.at(i).BRNO<<lineList.at(i).CD<<"---------old:"<<tempList.at(i).CD;
-         if(i==5)
+         //if(i<8)
            getCOM_buf(lineList.at(i));
 
               i++;
@@ -200,6 +201,7 @@ void GetHttpReturn::CompareInfo()
         //msleep(100);
 
     }
+    deal_all_finish=true;
 }
 
 void GetHttpReturn::getCOM_buf(BusLine newBus)
@@ -208,6 +210,7 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
     buf.clear();
     info.clear();
     u_int8_t sum;
+    info.append(" ");
     info.append(newBus.BRNO);
     info.append("-");
     //info.append(newBus.BCNO);
@@ -245,7 +248,11 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
     buf[9]=1+2+len;
     buf[10]=0x66;
     buf[11]=0xdd;
-    buf[12]=0x34;//number of screen
+    if(newBus.id<10)
+      buf[12]=newBus.id+0x01+0x33;
+    else if(newBus.id<20)
+        buf[12]=newBus.id+0x02+0x33;
+    //number of screen
     //waitting for further development
     //qDebug()<<"Go to write the COM";
     //info.append(QString::number(newBus.id));
@@ -265,7 +272,11 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
     buf[13+len+1]=0x16;
     //deal the information of bus which update now
     qDebug()<<"send to com:getCOM_buf"<<buf.toHex();
+
     emit signal_writeCom(buf);//send to COM
+    sleep(2);
+    if( myCOM::writeState==true)
+        myCOM::writeState=false;
     // emit signal_writeCom(0x6899999999999968041B44DD3469656A530903041EECDE07E3E9DEF5EA53E726060D6908F1C216);
 }
 

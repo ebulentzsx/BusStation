@@ -1,11 +1,14 @@
 #include "mycom.h"
 #include <QTextCodec>
+int myCOM::waitCount=0;
+bool myCOM::writeState=false;
 myCOM::myCOM(QObject *parent) :
      QObject(parent)
 {
 
     getCurrentTime();
     flag_isOpen =false;
+    //writeState=true;
     myCom = new Posix_QextSerialPort(DeviceSetting::usbSet,QextSerialBase::Polling);
 
     readThread=new readComThread();
@@ -72,7 +75,7 @@ int myCOM::recvCOM()
 int myCOM::sendCOM(QByteArray buf)
 {
     int ret=0;
-    writeLock.lock();
+
     QByteArray tmp;
     tmp.append(buf);
     if(flag_isOpen)
@@ -95,7 +98,7 @@ int myCOM::sendCOM(QByteArray buf)
         ret=-1;
     }
       qDebug() << QString("-----------slot in mycom thread id:sendCOM") << QThread::currentThreadId();
-      writeLock.unlock();
+
     return ret;
 
 }
@@ -143,17 +146,28 @@ void myCOM::slot_getStateFromCom(const QString &tmp)
 
 void myCOM::slot_send_COM(QByteArray buf)
 {
-    qDebug() << QString("-----------slot in mycom thread id:::slot_send_COM") << QThread::currentThreadId();
+   writeState=true;
+    myCOM::waitCount --;
+    writeLock.lock();
+
+    qDebug() << "Current task counts"<<waitCount;
     sendCOM(buf);
+   // sleep(1);
     QByteArray temp;
     temp.clear();
     while(temp.isEmpty()){
         qDebug()<<"------------running in wihile in watiing com return";
+      if(writeState==false)
+            break;
+
         temp= myCom->readAll();
     }
-    qDebug()<<"-------------Read OK!Receive:"<<temp.toHex();
-    //emit signal_getStateFromCom(temp);
-    emit signal_getState(temp);
+
+     qDebug()<<"-------------Read OK!Receive:"<<temp.toHex();
+
+      emit signal_getState(temp);
+
+    writeLock.unlock();
 
 
 
@@ -173,6 +187,7 @@ void myCOM::slot_init()
     //recvCOM();
     qDebug() << QString("slot in myCOM thread id:slot_init") << QThread::currentThreadId();
 }
+
 
 void myCOM::closeCOM()
 {

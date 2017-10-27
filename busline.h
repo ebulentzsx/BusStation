@@ -8,7 +8,7 @@ class BusLine
 public:
     BusLine();
     int flag;
-    int id,id0;
+    int id;
     int BusFoward,BusFoward0;  // back or forward
     int LSC;  //left stations  2
     QString BCNO; //BG4532

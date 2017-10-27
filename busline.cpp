@@ -7,7 +7,7 @@ BusLine::BusLine()
 
 void BusLine::setID(int tmp)
 {
-    id0=id;
+
     id=tmp;
 }
 

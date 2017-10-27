@@ -55,12 +55,15 @@ void secondFunction::slot_getState(const QString &strResult)
 {
     QByteArray info;
     info.append(strResult);
+   info.operator [](0);
+           // QByteArray::operator [](0);
    // qDebug() << QString("---------------slot in second function thread id:get state") <<info[8]<<QThread::currentThreadId();
      //qDebug() << QString("---------------slot in second function thread id:get state") <<info;
     //qDebug()<<"second function get state from COM"<<tmp_HardwareInfo;
     //qDebug() << QString("slot in mycom thread id:get state") << QThread::currentThreadId();
 
-     if (( 0x68==info[0])&&(0x68== info[7] )&&(0x81==info[8]))
+    // if (( 0x68==info.operator [](0))&&(0x68== info.operator [](7) )&&(0x81==info.operator [](8)))
+        if (( 0x68==info[0])&&(0x68== info[7] )&&(0x81==info[8]))
          qDebug() <<"---------------------Get all status:Return OK"<<info;
      if (( 0x68==info[0])&&(0x68== info[7] )&&(0x84==info[8]))
          qDebug() <<"---------------------Control display:Return OK"<<info;

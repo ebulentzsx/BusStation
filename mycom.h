@@ -8,6 +8,7 @@
 #include "readcomthread.h"
 #include "devicesetting.h"
 #include <QCoreApplication>
+#include <QTimer>
 class myCOM : public QObject
 {
     Q_OBJECT
@@ -17,7 +18,10 @@ public:
     Posix_QextSerialPort *myCom;
     QString strTime;
     bool flag_isOpen;
+    static  bool writeState;
+
     QMutex writeLock;
+    static int waitCount;
   //  myCOM();
     void setCOM();//Setting
     int openCOM();//Open COM and create new thread
@@ -25,6 +29,8 @@ public:
     int recvCOM();
     int testCOM();
     void closeCOM();
+    //void addTask();
+   // void RemoveTask();
     void getCurrentTime();
     void run();
 signals:
@@ -36,6 +42,7 @@ public slots:
     void slot_send_COM(QByteArray buf);
     void slot_re_open_COM(bool com_state);
     void slot_init();
+ //   void slot_return_timeout();
 };
 
 #endif // MYCOM_H

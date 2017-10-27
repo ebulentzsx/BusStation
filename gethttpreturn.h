@@ -1,5 +1,6 @@
 #ifndef GETHTTPRETURN_H
 #define GETHTTPRETURN_H
+
 #include <qprocess.h>
 #include <QObject>
 #include <qdebug.h>
@@ -9,6 +10,7 @@
 #include <QThread>
 #include "busline.h"
 #include "devicesetting.h"
+#include "mycom.h"
 #define GET_BUS_IFOR 1
 #define GET_SYS_TIME 2
 #define SERVER_IP "http://123.207.75.109:10000/YiYangIndex.ashx?ActionKey="
@@ -42,6 +44,8 @@ public:
     void ClearTemp();
     void CompareInfo();
     void getCOM_buf(BusLine newBus);
+    bool deal_all_finish;
+    static bool deal_one_finish;
     //void addActionKey();
     QString strInfor;
     QString strUrl;

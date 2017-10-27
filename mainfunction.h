@@ -20,6 +20,7 @@ public:
     void setSys_time();
     void beginLoop();
     void run();
+    void showTitle();
 
 signals:
     void signal_sendRequest(const QString& strUrl);
