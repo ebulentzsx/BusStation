@@ -156,16 +156,19 @@ void myCOM::slot_send_COM(QByteArray buf)
     QByteArray temp;
     temp.clear();
     while(temp.isEmpty()){
-        qDebug()<<"------------running in wihile in watiing com return";
+    temp= myCom->readAll();
       if(writeState==false)
             break;
 
-        temp= myCom->readAll();
-    }
 
-     qDebug()<<"-------------Read OK!Receive:"<<temp.toHex();
+    }
+if (temp.isEmpty())qDebug()<<"------------------------------------------------------------------------------------------------------------------------------------No display";
+else
+{
+     qDebug()<<"Read OK!Receive:"<<temp.toHex();
 
       emit signal_getState(temp);
+}
 
     writeLock.unlock();
 

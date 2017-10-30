@@ -5,6 +5,7 @@ bool GetHttpReturn::deal_one_finish=true;
 GetHttpReturn::GetHttpReturn(QObject *parent) :
     QObject(parent)
 {
+    init_flag=true;
     deal_all_finish=true;
 }
 
@@ -168,6 +169,16 @@ void GetHttpReturn::ClearTemp()
 
 void GetHttpReturn::CompareInfo()
 {
+    if(tempList.isEmpty() && init_flag)
+    {
+        deal_all_finish=false;
+        foreach (BusLine x, lineList) {
+             getCOM_buf(x);
+        }
+        deal_all_finish=true;
+        init_flag=false;
+        return;
+    }
     int i=0,x;
     int new_count,tmp_count;
     new_count = lineList.count();
@@ -238,7 +249,7 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
     uint len=info.length();
     //qDebug()<<"info.length:"<<len;
     //int len=info.count();
-   qDebug()<<"Write the COM info:"<<info;
+   qDebug()<<"----------------------------------------------------------------------------------------------------------Write the COM info:"<<newBus.id<<"---"<<info;
    // int len=newBus.BRNO.length()+newBus.BCNO.length()+newBus.CD.length();
     buf[0]=0x68;
     for(int i=1;i<7;++i)

@@ -43,6 +43,7 @@ public:
     void SetSysTime();
     void ClearTemp();
     void CompareInfo();
+    bool init_flag;
     void getCOM_buf(BusLine newBus);
     bool deal_all_finish;
     static bool deal_one_finish;
