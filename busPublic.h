@@ -13,8 +13,7 @@
 #include "mycom.h"
 #include "mainfunction.h"
 #include "devicesetting.h"
-#define LOG_FILE_PATH "./busLOG"
-#define VERSION_FILE_PATH "./busV"
+#include "pubulicDefine.h"
 
 
 /*

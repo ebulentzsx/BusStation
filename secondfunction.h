@@ -6,6 +6,8 @@
 #include <QTimer>
 #include "devicesetting.h"
 #include "HttpFun.h"
+#include "pubulicDefine.h"
+#include "mainfunction.h"
 class secondFunction : public QObject
 {
     Q_OBJECT
@@ -15,18 +17,25 @@ public:
     void beginLoop();
     void get_all_status();
     void updateToServer();
+    void updateAllToServer();
+    void postSunLog();
+    void postBatteryLog();
+    static int delaySeconds;
+    static int maxDelaySeconds;
+    int secTimer;
     QString post_url;
     QByteArray tmp_HardwareInfo;
     HttpFun *secHttp;
     DeviceSetting busDev;
+    bool wetherFinished;
     //DeviceSetting busDev;
 signals:
     void signal_send_com(QByteArray tmp);
 public slots:
     void slot_getState(const QString &strResult);
-    void slot_send_get_status();
     void slot_init_watch();
     void slot_requestFinished(bool bSuccess, const QString &strResult);
+    void  slot_pubulic_timer();
 
 };
 

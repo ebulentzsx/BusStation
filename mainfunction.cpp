@@ -21,6 +21,15 @@ MainFunction::MainFunction(QObject *parent) :
     //QObject::connect(this,SIGNAL(signal_send_COM(QByteArray)),my_com,SLOT(slot_send_COM(QByteArray)));
     //QObject::connect(dealComInfo,SIGNAL(signal_send_cmd()),newInfo,SLOT(slot_get_allstatus()));
 }
+
+void MainFunction::myDelay()
+{
+    DeviceSetting::delaySeconds=0;
+    while(DeviceSetting::delaySeconds<DeviceSetting::maxDelaySeconds);
+    DeviceSetting::delaySeconds=-1;
+}
+
+
 void MainFunction::setSys_time()
 {
     newInfo->GetUrl(2);

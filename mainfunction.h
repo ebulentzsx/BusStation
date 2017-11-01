@@ -7,6 +7,7 @@
 #include "mycom.h"
 #include "busline.h"
 #include "secondfunction.h"
+#include "pubulicDefine.h"
 class MainFunction : public QObject
 {
     Q_OBJECT
@@ -15,6 +16,7 @@ public:
     HttpFun *pHttpFun;
     GetHttpReturn *newInfo;
     QTimer *timer;
+    void myDelay();
 
     //secondFunction *dealComInfo;
     void setSys_time();

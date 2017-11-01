@@ -2,11 +2,13 @@
  #include <QDateTime>
 
 bool GetHttpReturn::deal_one_finish=true;
+
 GetHttpReturn::GetHttpReturn(QObject *parent) :
     QObject(parent)
 {
     init_flag=true;
     deal_all_finish=true;
+    lastPort=0;
 }
 
 void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult)
@@ -128,8 +130,26 @@ void  GetHttpReturn::GetLines()
     tempLine.setCD(strCD);
     tempLine.MSG=strBRNO+"--"+strBCNO+"--"+strLSC+"--"+strCD;
     lineList.append(tempLine);
+
     */
+
+    if(intId>18)
+        intId=intId-18;
+    if(intId%2==1)
+    {
+        intId=(intId+1)/2+1;
+    }
+    else if(intId%2==0)
+    {
+        intId=(intId)/2+11;
+    }
     tempLine.id=intId;
+    if(intId<9)
+        tempLine.numPort=1;
+    else if(intId>10 && intId<19)
+        tempLine.numPort=2;
+    else if(intId==9 || intId==10 || intId==19 || intId==20)
+        tempLine.numPort=3;
     tempLine.BCNO=strBCNO;
     tempLine.BusFoward=intBF;
     tempLine.BRNO=strBRNO;
@@ -198,12 +218,13 @@ void GetHttpReturn::CompareInfo()
        //    if(i==1)
            //  getCOM_buf(lineList.at(i));
              //qDebug()<<lineList.at(i).id<<"NO:UPDATE"<<lineList.at(i).BRNO<<lineList.at(i).CD<<"---------old:"<<tempList.at(i).CD;
+             getCOM_buf(lineList.at(i));//refresh all
             i++;
             continue;
         }
         else
         {
-            qDebug()<<lineList.at(i).id<<"UPDATE--new:"<<lineList.at(i).BRNO<<lineList.at(i).CD<<"---------old:"<<tempList.at(i).CD;
+            //qDebug()<<lineList.at(i).id<<"UPDATE--new:"<<lineList.at(i).BRNO<<lineList.at(i).CD<<"---------old:"<<tempList.at(i).CD;
          //if(i<8)
            getCOM_buf(lineList.at(i));
 
@@ -213,6 +234,22 @@ void GetHttpReturn::CompareInfo()
 
     }
     deal_all_finish=true;
+}
+
+void GetHttpReturn::myDelay()
+{
+    DeviceSetting::delaySeconds=0;
+    sleep(1);
+    while(1)
+    {
+
+        if(DeviceSetting::delaySeconds==-1)
+            break;
+    }
+    //qDebug()<<"test"<<test;
+    //DeviceSetting::delaySeconds=-1;
+    if( myCOM::writeState==true)
+        myCOM::writeState=false;
 }
 
 void GetHttpReturn::getCOM_buf(BusLine newBus)
@@ -259,11 +296,19 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
     buf[9]=1+2+len;
     buf[10]=0x66;
     buf[11]=0xdd;
+
+
+   // qDebug()<<"----------------------------------------------------------------------------------------------------------Write the COM info:"<<numSecreen<<"---"<<info;
+
+    buf[12]=newBus.id+0x33;
+    /*
     if(newBus.id<10)
       buf[12]=newBus.id+0x01+0x33;
     else if(newBus.id<20)
         buf[12]=newBus.id+0x02+0x33;
     //number of screen
+    */
+
     //waitting for further development
     //qDebug()<<"Go to write the COM";
     //info.append(QString::number(newBus.id));
@@ -284,10 +329,23 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
     //deal the information of bus which update now
     qDebug()<<"send to com:getCOM_buf"<<buf.toHex();
 
+    if(lastPort==newBus.numPort)
+    {
+         qDebug()<<"No change COM port sleep 1s";
+       sleep(1);
+    }
+    lastPort=newBus.numPort;
+
     emit signal_writeCom(buf);//send to COM
-    sleep(2);
-    if( myCOM::writeState==true)
-        myCOM::writeState=false;
+
+
+//{
+    myDelay();
+    //msleep(1500);
+    //QThread::msleep(1500);
+   // if(newBus.id==9 || newBus.id==10 || newBus.id==19 || newBus.id==20)
+
+//}
     // emit signal_writeCom(0x6899999999999968041B44DD3469656A530903041EECDE07E3E9DEF5EA53E726060D6908F1C216);
 }
 

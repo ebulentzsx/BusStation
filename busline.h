@@ -1,7 +1,7 @@
 #ifndef BUSLINE_H
 #define BUSLINE_H
 #include <QString>
-
+#include "pubulicDefine.h"
 class BusLine
 {
 
@@ -9,6 +9,7 @@ public:
     BusLine();
     int flag;
     int id;
+    int numPort;
     int BusFoward,BusFoward0;  // back or forward
     int LSC;  //left stations  2
     QString BCNO; //BG4532
@@ -22,7 +23,7 @@ public:
     void setBRNO(QString tmp);
     void setCD(QString tmp);
     void setMSG(QString tmp);
-    void GetOneLineFromString(QString strModel);
+
 };
 
 #endif // BUSLINE_H

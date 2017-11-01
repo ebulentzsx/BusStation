@@ -38,4 +38,5 @@ HEADERS += \
     busPublic.h \
     mainfunction.h \
     secondfunction.h \
-    devicesetting.h
+    devicesetting.h \
+    pubulicDefine.h

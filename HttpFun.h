@@ -9,6 +9,7 @@
 #include <QSslConfiguration>
 #include <QString>
 #include <QByteArray>
+#include "pubulicDefine.h"
 //#define MY_GB2312 1
 //#define MY_UTF8 1
 #define NOINCODE 1

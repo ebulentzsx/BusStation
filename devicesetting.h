@@ -5,7 +5,7 @@
 #include <QVector>
 #include <QList>
 #include <QFile>
-#define ID_FILE_PATH "./bus.cfg"
+#include "pubulicDefine.h"
 class DeviceSetting
 {
 public:
@@ -15,6 +15,8 @@ public:
     static QString programVID;
     static QString serverIP;
     static QString usbSet;
+    static int delaySeconds;
+    static int maxDelaySeconds;
 
 
     static QList<QString> actionKey;

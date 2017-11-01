@@ -155,20 +155,22 @@ void myCOM::slot_send_COM(QByteArray buf)
    // sleep(1);
     QByteArray temp;
     temp.clear();
+    int getOut=0;
     while(temp.isEmpty()){
-    temp= myCom->readAll();
-      if(writeState==false)
+        getOut++;
+        temp= myCom->readAll();
+
+      if(writeState==false || getOut>20)
             break;
-
-
     }
-if (temp.isEmpty())qDebug()<<"------------------------------------------------------------------------------------------------------------------------------------No display";
-else
-{
-     qDebug()<<"Read OK!Receive:"<<temp.toHex();
+    DeviceSetting::delaySeconds=-1;
+    if (temp.isEmpty())qDebug()<<"------------------------------------------------------------------------------------------------------------------------------------No display";
+    else
+    {
+      qDebug()<<"Read OK!Receive:"<<temp.toHex();
 
       emit signal_getState(temp);
-}
+    }
 
     writeLock.unlock();
 

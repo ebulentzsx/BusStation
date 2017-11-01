@@ -11,9 +11,8 @@
 #include "busline.h"
 #include "devicesetting.h"
 #include "mycom.h"
-#define GET_BUS_IFOR 1
-#define GET_SYS_TIME 2
-#define SERVER_IP "http://123.207.75.109:10000/YiYangIndex.ashx?ActionKey="
+#include "pubulicDefine.h"
+//#include "mainfunction.h"
 /*
 typedef struct
 {
@@ -33,6 +32,7 @@ class GetHttpReturn : public QObject
     Q_OBJECT
 public:
     int p_cmdFlag;
+    int lastPort;
     explicit GetHttpReturn(QObject *parent = 0);
    //QLinkedList <BusLine> lineList,tempList;
     QVector <BusLine> lineList,tempList;
@@ -43,6 +43,7 @@ public:
     void SetSysTime();
     void ClearTemp();
     void CompareInfo();
+    void myDelay();
     bool init_flag;
     void getCOM_buf(BusLine newBus);
     bool deal_all_finish;

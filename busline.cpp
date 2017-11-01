@@ -47,7 +47,4 @@ void BusLine::setMSG(QString tmp)
     MSG=tmp;
 }
 
-void BusLine::GetOneLineFromString(QString strModel)
-{
 
-}
