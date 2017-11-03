@@ -40,10 +40,16 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
 void GetHttpReturn::SetSysTime()
 {
 
+     qDebug()<<"Get time from server SUCCESS"<<stime;
     QString stime=strInfor.mid(strInfor.indexOf("model")+8,19);
     stime.remove(4,1);
     stime.remove(6,1);
-    stime="date -s \""+stime+"\"";
+    stime.insert(4,".");
+    stime.insert(7,".");
+    stime.insert(11,"-");
+    stime.remove(10,1);
+    stime="date -s "+stime;
+    // date -s 2011-03-03-13:48:00
     QProcess::execute(stime);
   //QProcess::execute("hwclock --systohc");
   //QProcess::execute("sysnc");
@@ -337,6 +343,7 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
     lastPort=newBus.numPort;
 
     emit signal_writeCom(buf);//send to COM
+    myCOM::waitCount ++;
 
 
 //{

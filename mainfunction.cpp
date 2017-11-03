@@ -41,13 +41,16 @@ void MainFunction::setSys_time()
  void MainFunction::slot_sendRequest()
  {
      if(newInfo->deal_all_finish==false)
+     {
+         qDebug() << QString("-----------------------------Get new information from server-********************************************8-----------------------------------------") ;
          return;
+     }
      newInfo->GetUrl(1);
      pHttpFun=new HttpFun();
      QObject::connect(pHttpFun,SIGNAL(signal_requestFinished(bool,QString)),newInfo,SLOT(slot_requestFinished(bool,QString)));
      pHttpFun->sendRequest(newInfo->strUrl);
      qDebug() << QString("get http return thread id:slot_sendRequest") << QThread::currentThreadId();
-
+    timer->start(3000);
  }
 
  void MainFunction::slot_writeCom(const QString &tmp)
@@ -67,9 +70,9 @@ void MainFunction::setSys_time()
 void MainFunction::beginLoop()
 {
 
-    //setSys_time();
+    setSys_time();
     timer->start(3000);
-    timer->setSingleShot( false );
+    timer->setSingleShot( true );
     emit signal_init_COM();
     emit signal_init_watch();
     showTitle();
