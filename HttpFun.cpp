@@ -38,7 +38,7 @@ void HttpFun::sendRequest(const QString &strUrl)
     m_pNetworkReply = m_pNetworkManager->get(netRequest); //发起get请求
     connect(m_pNetworkReply,SIGNAL(finished()),this,SLOT(slot_requestFinished())); //请求完成信号
     m_pTimer->start(nHTTP_TIME);
-   // qDebug()<<"request is going";
+    qDebug()<<"request is going";
 
 }
 
@@ -53,16 +53,16 @@ void HttpFun::slot_requestFinished()
     //     QTextCodec::setCodecForCStrings(QTextCodec::codecForLocale());//change the char code
 
     //--------------------------------------------------------------------------------
-#ifdef MY_GB2312
+#if MY_GB2312
     QTextCodec* pCodec = QTextCodec::codecForName("GB2312");
     QString strResult = pCodec->toUnicode(resultContent);
 #endif
 
-#ifdef MY_UTF8
+#if MY_UTF8
     QTextCodec* pCodec = QTextCodec::codecForName("UTF-8");
     QString strResult = pCodec->toUnicode(resultContent);
 #endif
-#ifdef NOINCODE
+#if NOINCODE
     QString strResult = resultContent;
 #endif
 
@@ -74,7 +74,15 @@ void HttpFun::slot_requestFinished()
        //qDebug()<<"To Hex:"<<resultContent.toHex();
        //qDebug()<<"String:"<<strResult;
         //emit signal_requestFinished(true,strResult);//请求成功
-        emit signal_requestFinished(true,resultContent);
+#if MY_GB2312
+    emit signal_requestFinished(true,strResult);
+#endif
+#if NOINCODE
+   // QString strResult = resultContent;
+    emit signal_requestFinished(true,resultContent);
+#endif
+
+
          //纯文本显示
 
 

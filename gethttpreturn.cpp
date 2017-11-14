@@ -24,6 +24,9 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
         case GET_SYS_TIME:
             SetSysTime();
             break;
+        case GET_ONE_FROM_CQ:
+            GetLines();
+            break;
         default:
             break;
         }
@@ -32,7 +35,7 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
     else
     {
         strInfor.clear();
-      qWarning("Get from server Failed!!");
+       qDebug()<<"Get from server Failed!!";
 
     }
 
@@ -40,7 +43,7 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
 void GetHttpReturn::SetSysTime()
 {
 
-     qDebug()<<"Get time from server SUCCESS"<<stime;
+    qDebug()<<"Get time from server SUCCESS"<<stime;
     QString stime=strInfor.mid(strInfor.indexOf("model")+8,19);
     stime.remove(4,1);
     stime.remove(6,1);
@@ -69,6 +72,9 @@ void  GetHttpReturn::GetUrl(int cmdFlag)
     case GET_SYS_TIME:
         strUrl= SERVER_IP+QString("GCSDT");
         break;
+    case GET_ONE_FROM_CQ:
+        strUrl= SERVER_IP+QString("GCQD");
+        break;
     default:
         break;
     }
@@ -77,6 +83,110 @@ void  GetHttpReturn::GetUrl(int cmdFlag)
 }
 void  GetHttpReturn::GetLines()
 {
+#if DEBUG_GET_ONE_STATION_FROM_CQ
+    tempList.clear();
+    tempList=lineList;
+    lineList.clear();
+    int j=0;
+    QString key_model="model";
+    QString key_BCNO="BCNO";
+    QString key_BCSta="BCSta";
+    QString key_STime="STime";
+    QString key_BRNO="BRNO";
+    QString key_BF="BF";
+    QString key_CD="CD";
+    QString key_LSC="LSC";
+    QString key_Id="Id";
+    QString key_Split="\"";
+    QString key_GetOne="{";
+    QString key_Dot=",";
+    QString key_GetOneR="}";
+    QString strBCNO;
+    QString strBCSta;
+    QString strSTime;
+    QString strBRNO;
+    QString strBF;
+    int intBF;
+    QString strId;
+    int intId;
+    QString strCD;
+    QString strLSC;
+    int intLSC;
+    QString strModel=strInfor.mid(strInfor.indexOf(key_model)+8);
+    j=strModel.indexOf(key_GetOne);
+     // qDebug()<<"strModel"<<strModel;
+    while(j>-1)
+    {
+        strModel=strModel.mid(j+1);
+
+        strBCNO=strModel.mid(strModel.indexOf(key_BCNO)+7);
+        strBCNO=strBCNO.mid(0,strBCNO.indexOf(key_Split));
+
+        strBCSta=strModel.mid(strModel.indexOf(key_BCSta)+8);
+        strBCSta=strBCSta.mid(0,strBCSta.indexOf(key_Split));
+
+        strSTime=strModel.mid(strModel.indexOf(key_STime)+8);
+        strSTime=strSTime.mid(0,strSTime.indexOf(key_Split));
+
+        strBRNO=strModel.mid(strModel.indexOf(key_BRNO)+7);
+        strBRNO=strBRNO.mid(0,strBRNO.indexOf(key_Split));
+
+        strBF=strModel.mid(strModel.indexOf(key_BF)+4);
+        intBF=strBF.mid(0,1).toInt();
+
+        strId=strModel.mid(strModel.indexOf(key_Id)+4);
+        intId=strId.mid(0,strId.indexOf(key_Split)-1).toInt();
+
+        strCD=strModel.mid(strModel.indexOf(key_CD)+5);
+        strCD=strCD.mid(0,strCD.indexOf(key_Split));
+
+        strLSC=strModel.mid(strModel.indexOf(key_LSC)+5);
+        //intLSC=strLSC.mid(0,1).toInt();
+        strLSC=strLSC.mid(0,1);
+        intLSC=strLSC.toInt();
+        BusLine tempLine ;
+        /*
+        tempLine.setID(intId);
+        tempLine.setBCNO(strBCNO);
+        tempLine.setBF(intBF);
+        tempLine.setBRNO(strBRNO);
+        tempLine.setLSC(intLSC);
+        tempLine.setCD(strCD);
+        tempLine.MSG=strBRNO+"--"+strBCNO+"--"+strLSC+"--"+strCD;
+        lineList.append(tempLine);
+
+        */
+
+        if(intId>18)
+            intId=intId-18;
+        if(intId%2==1)
+        {
+            intId=(intId+1)/2+1;
+        }
+        else if(intId%2==0)
+        {
+            intId=(intId)/2+11;
+        }
+        tempLine.id=intId;
+        if(intId<9)
+            tempLine.numPort=1;
+        else if(intId>10 && intId<19)
+            tempLine.numPort=2;
+        else if(intId==9 || intId==10 || intId==19 || intId==20)
+            tempLine.numPort=3;
+        tempLine.BCNO=strBCNO;
+        tempLine.BusFoward=intBF;
+        tempLine.BRNO=strBRNO;
+        tempLine.LSC=intLSC;
+        tempLine.CD=strCD;
+        tempLine.BCSta=strBCSta;
+        tempLine.STime=strSTime;
+        tempLine.MSG=strBRNO+"--"+strBCNO+"--"+strLSC+"--"+strCD;
+        lineList.append(tempLine);
+        j=strModel.indexOf(key_GetOne);
+    }
+   CompareInfo();
+#else
     tempList.clear();
     tempList=lineList;
     lineList.clear();
@@ -186,7 +296,7 @@ void  GetHttpReturn::GetLines()
         //qDebug()<<"intLSC"<<x.LSC;
        // qDebug()<<x.id;
     //}
-
+#endif
 }
 void GetHttpReturn::ClearTemp()
 {
@@ -223,16 +333,23 @@ void GetHttpReturn::CompareInfo()
 
        //    if(i==1)
            //  getCOM_buf(lineList.at(i));
-             //qDebug()<<lineList.at(i).id<<"NO:UPDATE"<<lineList.at(i).BRNO<<lineList.at(i).CD<<"---------old:"<<tempList.at(i).CD;
+             qDebug()<<lineList.at(i).id<<"NO:UPDATE"<<lineList.at(i).BRNO<<lineList.at(i).CD<<"---------old:"<<tempList.at(i).CD;
+#if DEBUT_WITHOUT_COM
+#else
              getCOM_buf(lineList.at(i));//refresh all
+#endif
             i++;
             continue;
         }
         else
         {
-            //qDebug()<<lineList.at(i).id<<"UPDATE--new:"<<lineList.at(i).BRNO<<lineList.at(i).CD<<"---------old:"<<tempList.at(i).CD;
+            qDebug()<<lineList.at(i).id<<"UPDATE--new:"<<lineList.at(i).BRNO<<lineList.at(i).CD<<"---------old:"<<tempList.at(i).CD;
          //if(i<8)
-           getCOM_buf(lineList.at(i));
+#if DEBUT_WITHOUT_COM
+#else
+             getCOM_buf(lineList.at(i));//refresh all
+#endif
+
 
               i++;
         }
@@ -260,6 +377,119 @@ void GetHttpReturn::myDelay()
 
 void GetHttpReturn::getCOM_buf(BusLine newBus)
 {
+#if DEBUG_GET_ONE_STATION_FROM_CQ
+    QByteArray buf,info;
+    int currentDistance;
+   currentDistance=newBus.CD.length();
+    buf.clear();
+    info.clear();
+    u_int8_t sum;
+    info.append(" ");
+    info.append(newBus.BRNO);
+    info.append("-");
+    //info.append(newBus.BCNO);
+   // if(QString::number(newBus.LSC)==0)
+    if(currentDistance<3)
+    {
+        info.append(" - - -");
+        info.append(newBus.BCSta);
+        //info.append("-");
+       // info.append("-");
+    }
+    else if(currentDistance<7)
+    {
+        info.append(0xca);
+        info.append(0xa3);
+        info.append(QString::number(newBus.LSC));
+        info.append(0xd5);
+        info.append(0xbe);
+        info.append("-");
+        info.append(newBus.CD);
+        info.append(0xc3);
+        info.append(0xd7);//mi
+    }
+    else
+    {
+        info.append(0xca);
+        info.append(0xa3);
+        info.append(QString::number(newBus.LSC));
+        info.append(0xd5);
+        info.append(0xbe);
+        info.append("-");
+        info.append(newBus.CD);
+    }
+
+
+
+    //D5BE zhan
+    //CAA3 sheng
+
+    //info.right()
+    //info.append("-");
+    //info.append("-");
+
+    //info.append("/n");
+    uint len=info.length();
+    //qDebug()<<"info.length:"<<len;
+    //int len=info.count();
+   qDebug()<<"----------------------------------------------------------------------------------------------------------Write the COM info:"<<newBus.id<<"---"<<info;
+   // int len=newBus.BRNO.length()+newBus.BCNO.length()+newBus.CD.length();
+    buf[0]=0x68;
+    for(int i=1;i<7;++i)
+        buf[i]=0x99;
+    buf[7]=0x68;
+    buf[8]=0x04;
+    buf[9]=1+2+len;
+    buf[10]=0x66;
+    buf[11]=0xdd;
+
+
+   // qDebug()<<"----------------------------------------------------------------------------------------------------------Write the COM info:"<<numSecreen<<"---"<<info;
+
+    buf[12]=newBus.id+0x33;
+    /*
+    if(newBus.id<10)
+      buf[12]=newBus.id+0x01+0x33;
+    else if(newBus.id<20)
+        buf[12]=newBus.id+0x02+0x33;
+    //number of screen
+    */
+
+    //waitting for further development
+    //qDebug()<<"Go to write the COM";
+    //info.append(QString::number(newBus.id));
+    //info.append(" ");
+
+   // info.append(" ");
+
+    for(int j=0;j<len;++j)
+    {
+        buf[13+j]=(info[j]+0x33)%256;
+    }
+    for(int k=0;k<(13+len);++k)
+    {
+        sum=(sum+buf[k])%256;
+    }
+    buf[13+len]=sum;
+    buf[13+len+1]=0x16;
+    //deal the information of bus which update now
+    qDebug()<<"send to com:getCOM_buf"<<buf.toHex();
+
+    if(lastPort==newBus.numPort)
+    {
+         qDebug()<<"No change COM port sleep 1s";
+       sleep(1);
+    }
+    lastPort=newBus.numPort;
+
+    emit signal_writeCom(buf);//send to COM
+    myCOM::waitCount ++;
+
+
+//{
+
+    myDelay();
+#else
     QByteArray buf,info;
     buf.clear();
     info.clear();
@@ -348,6 +578,7 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
 
 //{
     myDelay();
+#endif
     //msleep(1500);
     //QThread::msleep(1500);
    // if(newBus.id==9 || newBus.id==10 || newBus.id==19 || newBus.id==20)

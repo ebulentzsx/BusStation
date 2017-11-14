@@ -45,7 +45,11 @@ void MainFunction::setSys_time()
          qDebug() << QString("-----------------------------Get new information from server-********************************************8-----------------------------------------") ;
          return;
      }
+#if DEBUG_GET_ONE_STATION_FROM_CQ
+     newInfo->GetUrl(3);
+#else
      newInfo->GetUrl(1);
+#endif
      pHttpFun=new HttpFun();
      QObject::connect(pHttpFun,SIGNAL(signal_requestFinished(bool,QString)),newInfo,SLOT(slot_requestFinished(bool,QString)));
      pHttpFun->sendRequest(newInfo->strUrl);
@@ -71,11 +75,14 @@ void MainFunction::beginLoop()
 {
 
     setSys_time();
-    timer->start(3000);
+    timer->start(6000);
     timer->setSingleShot( true );
+
     emit signal_init_COM();
+
     emit signal_init_watch();
     showTitle();
+
     qDebug() << QString("main loop begin!!!") ;
 
 }

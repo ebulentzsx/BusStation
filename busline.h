@@ -16,6 +16,9 @@ public:
     QString BRNO;//line name  325
     QString CD;//distance  1800m
     QString MSG;
+    QString BCSta;
+    QString STime;
+
     void setID(int tmp);
     void setBF(int tmp);
     void setLSC(int tmp);
