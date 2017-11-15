@@ -87,7 +87,7 @@ void testEnv()
    else
         {
        qDebug()<<"Test internet Failed!!";
-        QProcess::execute("reboot");
+        //QProcess::execute("reboot");
    }
 //Get device information
 

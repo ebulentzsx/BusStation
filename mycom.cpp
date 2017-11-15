@@ -184,8 +184,10 @@ void myCOM::slot_re_open_COM(bool com_state)
    openCOM();
    DeviceSetting::error_Reboot++;
    if(DeviceSetting::error_Reboot>3)
+   {
         QProcess::execute("reboot");
-
+        qDebug() <<"my_com error";
+    }
 }
 
 void myCOM::slot_init()

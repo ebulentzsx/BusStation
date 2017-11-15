@@ -209,6 +209,9 @@ void secondFunction::slot_pubulic_timer()
      //Second funcion do
         qDebug() << QString("slot in second function thread id:slot_send_get_status") << QThread::currentThreadId();
         secTimer=0;
+#if GET_ONE_FROM_CQ
+#else
         get_all_status();
+#endif
   //  }
 }

@@ -39,7 +39,10 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
        qDebug()<<"Get from server Failed!!";
        DeviceSetting::error_Reboot++;
        if(DeviceSetting::error_Reboot>3)
+       {
+           qDebug()<<"Get from server Failed!!";
            QProcess::execute("reboot");
+       }
     }
 
 }

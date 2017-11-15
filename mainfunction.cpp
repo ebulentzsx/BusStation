@@ -48,7 +48,7 @@ void MainFunction::setSys_time()
      QObject::connect(pHttpFun,SIGNAL(signal_requestFinished(bool,QString)),newInfo,SLOT(slot_requestFinished(bool,QString)));
      pHttpFun->sendRequest(newInfo->strUrl);
      qDebug() << QString("get http return thread id:slot_sendRequest") << QThread::currentThreadId();
-    timer->start(2500);
+    timer->start(3300);
  }
 
  void MainFunction::slot_writeCom(const QString &tmp)
@@ -69,7 +69,7 @@ void MainFunction::beginLoop()
 {
 
     setSys_time();
-    timer->start(3000);
+    timer->start(3800);
     timer->setSingleShot( true );
 
     emit signal_init_COM();
