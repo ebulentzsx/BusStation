@@ -22,12 +22,6 @@ MainFunction::MainFunction(QObject *parent) :
     //QObject::connect(dealComInfo,SIGNAL(signal_send_cmd()),newInfo,SLOT(slot_get_allstatus()));
 }
 
-void MainFunction::myDelay()
-{
-    DeviceSetting::delaySeconds=0;
-    while(DeviceSetting::delaySeconds<DeviceSetting::maxDelaySeconds);
-    DeviceSetting::delaySeconds=-1;
-}
 
 
 void MainFunction::setSys_time()
@@ -54,7 +48,7 @@ void MainFunction::setSys_time()
      QObject::connect(pHttpFun,SIGNAL(signal_requestFinished(bool,QString)),newInfo,SLOT(slot_requestFinished(bool,QString)));
      pHttpFun->sendRequest(newInfo->strUrl);
      qDebug() << QString("get http return thread id:slot_sendRequest") << QThread::currentThreadId();
-    timer->start(3000);
+    timer->start(2500);
  }
 
  void MainFunction::slot_writeCom(const QString &tmp)
@@ -75,7 +69,7 @@ void MainFunction::beginLoop()
 {
 
     setSys_time();
-    timer->start(6000);
+    timer->start(3000);
     timer->setSingleShot( true );
 
     emit signal_init_COM();

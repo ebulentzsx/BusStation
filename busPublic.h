@@ -85,9 +85,13 @@ void testEnv()
    if(IPLive("115.239.211.112", 80))
        qDebug()<<"Test internet OK!!";
    else
+        {
        qDebug()<<"Test internet Failed!!";
+        QProcess::execute("reboot");
+   }
 //Get device information
 
 
 }
+
 #endif // BUSPUBLIC_H

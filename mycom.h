@@ -10,6 +10,7 @@
 #include <QCoreApplication>
 #include <QTimer>
 #include "pubulicDefine.h"
+
 class myCOM : public QObject
 {
     Q_OBJECT

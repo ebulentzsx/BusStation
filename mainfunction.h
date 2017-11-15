@@ -16,7 +16,7 @@ public:
     HttpFun *pHttpFun;
     GetHttpReturn *newInfo;
     QTimer *timer;
-    void myDelay();
+
 
     //secondFunction *dealComInfo;
     void setSys_time();

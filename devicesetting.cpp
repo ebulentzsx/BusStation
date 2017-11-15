@@ -6,6 +6,7 @@ QString DeviceSetting::serverIP="http://123.207.75.109:10000/YiYangIndex.ashx?Ac
 QString DeviceSetting::usbSet=NULL;
 int DeviceSetting::delaySeconds=-1;
 int DeviceSetting::maxDelaySeconds=WAIT_COM_RETURN_TIME;
+int DeviceSetting::error_Reboot=0;
 QList<QString>  DeviceSetting::actionKey;
 DeviceSetting::DeviceSetting()
 {

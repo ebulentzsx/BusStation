@@ -88,7 +88,7 @@ int myCOM::sendCOM(QByteArray buf)
         //qDebug() << "----------tmp"<<tmp.toHex();
         //sleep(1);
         //qDebug() << "----------buf"<<buf.toHex();
-
+        DeviceSetting::error_Reboot=0;
 
     }
     else
@@ -182,6 +182,9 @@ void myCOM::slot_re_open_COM(bool com_state)
 {
    closeCOM();
    openCOM();
+   DeviceSetting::error_Reboot++;
+   if(DeviceSetting::error_Reboot>3)
+        QProcess::execute("reboot");
 
 }
 
@@ -189,6 +192,7 @@ void myCOM::slot_init()
 {
     setCOM();
     openCOM();
+
     //recvCOM();
     qDebug() << QString("slot in myCOM thread id:slot_init") << QThread::currentThreadId();
 }

@@ -12,6 +12,7 @@
 #include "devicesetting.h"
 #include "mycom.h"
 #include "pubulicDefine.h"
+
 //#include "mainfunction.h"
 /*
 typedef struct

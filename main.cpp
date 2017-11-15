@@ -3,7 +3,9 @@ void outputMessage(QtMsgType type, const char *msg);
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-
+    //QProcess::execute("pppd call wcdma&");
+    system("pppd call wcdma&");
+    sleep(16);
     testEnv();
     //qInstallMsgHandler(outputMessage);
 

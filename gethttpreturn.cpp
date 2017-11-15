@@ -16,6 +16,7 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
 
     if(bSuccess)
     {
+        DeviceSetting::error_Reboot=0;
         strInfor=strResult;
         switch (p_cmdFlag) {
         case GET_BUS_IFOR:
@@ -36,7 +37,9 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
     {
         strInfor.clear();
        qDebug()<<"Get from server Failed!!";
-
+       DeviceSetting::error_Reboot++;
+       if(DeviceSetting::error_Reboot>3)
+           QProcess::execute("reboot");
     }
 
 }
