@@ -18,6 +18,7 @@ public:
     QString MSG;
     QString BCSta;
     QString STime;
+    QString ESN;
 
     void setID(int tmp);
     void setBF(int tmp);

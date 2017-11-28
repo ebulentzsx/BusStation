@@ -23,7 +23,8 @@ public:
     void beginLoop();
     void run();
     void showTitle();
-
+    void showNULL();
+    bool checkTime();
 signals:
     void signal_sendRequest(const QString& strUrl);
     void signal_send_COM(QByteArray buf);
@@ -31,7 +32,7 @@ signals:
     void signal_init_watch();
 public slots:
     void slot_sendRequest();
-    void slot_writeCom(const QString& strResult);
+    void slot_writeCom(QByteArray strResult);
 
 private:
 

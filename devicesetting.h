@@ -18,6 +18,7 @@ public:
     static int delaySeconds;
     static int maxDelaySeconds;
     static int error_Reboot;
+    static int com_error_Reboot;
 
 
     static QList<QString> actionKey;

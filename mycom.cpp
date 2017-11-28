@@ -83,7 +83,7 @@ int myCOM::sendCOM(QByteArray buf)
         ret =0 ;
          qDebug() << "!!---------myCom->isWritable"<<myCom->isWritable();
         myCom->write(tmp);
-
+    qDebug() << "myCOM----------sendCOM"<<tmp.toHex();
         myCom->flush();
         //qDebug() << "----------tmp"<<tmp.toHex();
         //sleep(1);
@@ -135,6 +135,7 @@ void myCOM::getCurrentTime()
 {
     QDateTime time = QDateTime::currentDateTime();//获取系统现在的时间
     strTime = time.toString("yyyy-MM-dd hh:mm:ss ddd");
+
 }
 
 
@@ -150,8 +151,8 @@ void myCOM::slot_send_COM(QByteArray buf)
     myCOM::waitCount --;
     writeLock.lock();
 
-    qDebug() << "Current task counts"<<waitCount;
     sendCOM(buf);
+    qDebug() << "myCOM----------slot_send_COM"<<buf.toHex();
    // sleep(1);
     QByteArray temp;
     temp.clear();
@@ -160,13 +161,25 @@ void myCOM::slot_send_COM(QByteArray buf)
         getOut++;
         temp= myCom->readAll();
 
-      if(writeState==false || getOut>20)
+      if(writeState==false || getOut>30)
             break;
     }
+    // qDebug() << "----------slot_send_COM--DeviceSetting::delaySeconds"<<DeviceSetting::delaySeconds;
     DeviceSetting::delaySeconds=-1;
-    if (temp.isEmpty())qDebug()<<"------------------------------------------------------------------------------------------------------------------------------------No display";
+    // qDebug() << "----------slot_send_COM--DeviceSetting::delaySeconds"<<DeviceSetting::delaySeconds;
+    if (temp.isEmpty())
+    {
+        DeviceSetting::com_error_Reboot++;
+        qDebug()<<"myCOM------------------------------------------------------------------------------------------------------------------------------------No display";
+        if(DeviceSetting::com_error_Reboot>5)
+        {
+            qDebug()<<"Write COM Failed!!";
+         //   QProcess::execute("reboot");
+        }
+    }
     else
     {
+      DeviceSetting::com_error_Reboot=0;
       qDebug()<<"Read OK!Receive:"<<temp.toHex();
 
       emit signal_getState(temp);

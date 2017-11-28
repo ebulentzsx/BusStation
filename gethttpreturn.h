@@ -56,7 +56,7 @@ public:
     //QString busFd;
     //QString programVID;
 signals:
-    void signal_writeCom(const QString &strResult);
+    void signal_writeCom(QByteArray strResult);
 public slots:
     //void slot_get_allstatus();
     void slot_requestFinished(bool bSuccess, const QString &strResult);

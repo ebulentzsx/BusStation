@@ -36,12 +36,18 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
     else
     {
         strInfor.clear();
+        if(p_cmdFlag==GET_SYS_TIME)
+            QProcess::execute("reboot");
        qDebug()<<"Get from server Failed!!";
        DeviceSetting::error_Reboot++;
-       if(DeviceSetting::error_Reboot>3)
+       if(DeviceSetting::error_Reboot>5)
        {
+#if    DEBUG_RUN_DESKTOP
+#else
            qDebug()<<"Get from server Failed!!";
            QProcess::execute("reboot");
+#endif
+
        }
     }
 
@@ -102,6 +108,7 @@ void  GetHttpReturn::GetLines()
     QString key_BF="BF";
     QString key_CD="CD";
     QString key_LSC="LSC";
+    QString key_ESN="ESN";
     QString key_Id="Id";
     QString key_Split="\"";
     QString key_GetOne="{";
@@ -112,6 +119,7 @@ void  GetHttpReturn::GetLines()
     QString strSTime;
     QString strBRNO;
     QString strBF;
+    QString strESN;
     int intBF;
     QString strId;
     int intId;
@@ -130,6 +138,9 @@ void  GetHttpReturn::GetLines()
 
         strBCSta=strModel.mid(strModel.indexOf(key_BCSta)+8);
         strBCSta=strBCSta.mid(0,strBCSta.indexOf(key_Split));
+
+        strESN=strModel.mid(strModel.indexOf(key_ESN)+6);
+        strESN=strESN.mid(0,strESN.indexOf(key_Split));
 
         strSTime=strModel.mid(strModel.indexOf(key_STime)+8);
         strSTime=strSTime.mid(0,strSTime.indexOf(key_Split));
@@ -162,9 +173,12 @@ void  GetHttpReturn::GetLines()
         lineList.append(tempLine);
 
         */
-
+#if DEBUG_4_DISPLAY
+         tempLine.id=intId%3+2;
+         tempLine.numPort=1;
+#else
         if(intId>18)
-            intId=intId-18;
+            intId=intId%18;
         if(intId%2==1)
         {
             intId=(intId+1)/2+1;
@@ -173,6 +187,7 @@ void  GetHttpReturn::GetLines()
         {
             intId=(intId)/2+11;
         }
+
         tempLine.id=intId;
         if(intId<9)
             tempLine.numPort=1;
@@ -180,6 +195,7 @@ void  GetHttpReturn::GetLines()
             tempLine.numPort=2;
         else if(intId==9 || intId==10 || intId==19 || intId==20)
             tempLine.numPort=3;
+#endif
         tempLine.BCNO=strBCNO;
         tempLine.BusFoward=intBF;
         tempLine.BRNO=strBRNO;
@@ -187,6 +203,8 @@ void  GetHttpReturn::GetLines()
         tempLine.CD=strCD;
         tempLine.BCSta=strBCSta;
         tempLine.STime=strSTime;
+        tempLine.ESN=strESN;
+
         tempLine.MSG=strBRNO+"--"+strBCNO+"--"+strLSC+"--"+strCD;
         lineList.append(tempLine);
         j=strModel.indexOf(key_GetOne);
@@ -342,7 +360,7 @@ void GetHttpReturn::CompareInfo()
              qDebug()<<lineList.at(i).id<<"NO:UPDATE"<<lineList.at(i).BRNO<<lineList.at(i).CD<<"---------old:"<<tempList.at(i).CD;
 #if DEBUT_WITHOUT_COM
 #else
-             getCOM_buf(lineList.at(i));//refresh all
+             //getCOM_buf(lineList.at(i));//refresh all
 #endif
             i++;
             continue;
@@ -368,15 +386,17 @@ void GetHttpReturn::CompareInfo()
 void GetHttpReturn::myDelay()
 {
     DeviceSetting::delaySeconds=0;
-    sleep(1);
+      sleep(1);
     while(1)
     {
-
+         //qDebug()<<"-------myDelay----"<<DeviceSetting::delaySeconds;
+        //sleep(1);
         if(DeviceSetting::delaySeconds==-1)
             break;
     }
     //qDebug()<<"test"<<test;
     //DeviceSetting::delaySeconds=-1;
+
     if( myCOM::writeState==true)
         myCOM::writeState=false;
 }
@@ -390,20 +410,38 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
     buf.clear();
     info.clear();
     u_int8_t sum;
-    info.append(" ");
+    //info.append(" ");
     info.append(newBus.BRNO);
     info.append("-");
+#if DEBUG_SHOW_DISTANCE
+#else
+    if(newBus.ESN.length()<4)
+        info.append("NULL");
+    else
+        info.append(newBus.ESN);
+    info.append("-");
+#endif
+    //info.append("-");
     //info.append(newBus.BCNO);
    // if(QString::number(newBus.LSC)==0)
     if(currentDistance<3)
     {
+#if DEBUG_SHOW_DISTANCE
         info.append(" - - -");
         info.append(newBus.BCSta);
+#else
+         info.append(newBus.BCSta);
+#endif
+        /*dai fa che
+
         //info.append("-");
        // info.append("-");
+       */
+
     }
     else if(currentDistance<7)
     {
+#if DEBUG_SHOW_DISTANCE
         info.append(0xca);
         info.append(0xa3);
         info.append(QString::number(newBus.LSC));
@@ -413,9 +451,20 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
         info.append(newBus.CD);
         info.append(0xc3);
         info.append(0xd7);//mi
+#else
+
+        info.append(QString::number(newBus.LSC));
+        info.append(0xd5);
+        info.append(0xbe);
+#endif
+        /*sheng ji zhan
+
+        */
+
     }
     else
     {
+#if DEBUG_SHOW_DISTANCE
         info.append(0xca);
         info.append(0xa3);
         info.append(QString::number(newBus.LSC));
@@ -423,6 +472,16 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
         info.append(0xbe);
         info.append("-");
         info.append(newBus.CD);
+#else
+
+         info.append(newBus.CD);
+#endif
+        /* jijiang daozhan
+
+        */
+
+        //info.append("-");
+
     }
 
 
@@ -479,7 +538,7 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
     buf[13+len]=sum;
     buf[13+len+1]=0x16;
     //deal the information of bus which update now
-    qDebug()<<"send to com:getCOM_buf"<<buf.toHex();
+    qDebug()<<"GetHttpReturn--send to com:getCOM_buf"<<buf.toHex();
 
     if(lastPort==newBus.numPort)
     {
@@ -489,6 +548,7 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
     lastPort=newBus.numPort;
 
     emit signal_writeCom(buf);//send to COM
+
     myCOM::waitCount ++;
 
 
