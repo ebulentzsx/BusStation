@@ -97,8 +97,9 @@ int myCOM::sendCOM(QByteArray buf)
         emit signal_COM_error(false);
         ret=-1;
     }
+    #if DEBUG_PRINT
       qDebug() << QString("-----------slot in mycom thread id:sendCOM") << QThread::currentThreadId();
-
+#endif
     return ret;
 
 }
@@ -125,7 +126,9 @@ int myCOM::testCOM()
     //myCom->write(buf0.toHex().append(0x16));
     myCom->write(buf);
     //myCom->write("68 99 99 99 99 99 99 68 04 17 44 DD 35 34 65 63 64 6A 60 63 6B 60 64 64 53 63 64 6D 63 65 6D 68 66 81 16");
+#if DEBUG_PRINT
     qDebug() <<"myCOM::testCOM--Send:"<<buf;
+#endif
     return 0;
     //qDebug() <<"myCOM::testCOM--SendQByteArray:"<<buf0.toHex();
 
@@ -152,16 +155,20 @@ void myCOM::slot_send_COM(QByteArray buf)
     writeLock.lock();
 
     sendCOM(buf);
+#if DEBUG_PRINT
+
     qDebug() << "myCOM----------slot_send_COM"<<buf.toHex();
+#endif
    // sleep(1);
     QByteArray temp;
     temp.clear();
     int getOut=0;
     while(temp.isEmpty()){
         getOut++;
+        sleep(1);
         temp= myCom->readAll();
 
-      if(writeState==false || getOut>30)
+      if(writeState==false || getOut>14)
             break;
     }
     // qDebug() << "----------slot_send_COM--DeviceSetting::delaySeconds"<<DeviceSetting::delaySeconds;
@@ -173,7 +180,7 @@ void myCOM::slot_send_COM(QByteArray buf)
         qDebug()<<"myCOM------------------------------------------------------------------------------------------------------------------------------------No display";
         if(DeviceSetting::com_error_Reboot>5)
         {
-            qDebug()<<"Write COM Failed!!";
+            qDebug()<<"------------Write COM Failed!!";
          //   QProcess::execute("reboot");
         }
     }
@@ -181,7 +188,7 @@ void myCOM::slot_send_COM(QByteArray buf)
     {
       DeviceSetting::com_error_Reboot=0;
       qDebug()<<"Read OK!Receive:"<<temp.toHex();
-
+      system("echo 0 >/dev/watchdog");
       emit signal_getState(temp);
     }
 

@@ -34,6 +34,7 @@ void MainFunction::setSys_time()
 }
  void MainFunction::slot_sendRequest()
  {
+
       qDebug() << QString("get http return thread id:slot_sendRequest") << QThread::currentThreadId();
      if(newInfo->deal_all_finish==false)
      {
@@ -43,7 +44,14 @@ void MainFunction::setSys_time()
      }
      if(checkTime()==false)
      {
-         sleep(5);
+         feedWtachDog();
+         sleep(10);
+         //newInfo->initAll1096();
+         if(newInfo->init_flag==false)
+         {
+            newInfo->initAll1096();
+            newInfo->init_flag=true;
+         }
          timer->start(REQUEST_INTERVERL);
          return;
      }
@@ -55,7 +63,7 @@ void MainFunction::setSys_time()
      pHttpFun=new HttpFun();
      QObject::connect(pHttpFun,SIGNAL(signal_requestFinished(bool,QString)),newInfo,SLOT(slot_requestFinished(bool,QString)));
      pHttpFun->sendRequest(newInfo->strUrl);
-
+    qDebug()<<"QTime startinf~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
      timer->start(REQUEST_INTERVERL);
  }
 
@@ -83,12 +91,8 @@ void MainFunction::beginLoop()
     emit signal_init_COM();
 
     emit signal_init_watch();
-    showTitle();
-    sleep(3);
-
-    showNULL();
-
     qDebug() << QString("main loop begin!!!") ;
+    initWatchDog();
 
 }
 
@@ -154,7 +158,7 @@ void MainFunction::showTitle()
     //BEE0  ju
     //C0EB  li
     //D3E0 yu
-//D6D5 zhong
+    //D6D5 zhong
     //B5E3 dian
     //info.right()
     //info.append("-");
@@ -268,4 +272,15 @@ bool MainFunction::checkTime()
         return true;
 
 }
+
+void MainFunction::initWatchDog()
+{
+     system("echo 0 >/dev/watchdog");
+}
+void MainFunction::feedWtachDog()
+{
+     system("echo 0 >/dev/watchdog");
+}
+
+
 

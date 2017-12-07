@@ -34,6 +34,7 @@ class GetHttpReturn : public QObject
 public:
     int p_cmdFlag;
     int lastPort;
+    QByteArray refresh_buf;
     explicit GetHttpReturn(QObject *parent = 0);
    //QLinkedList <BusLine> lineList,tempList;
     QVector <BusLine> lineList,tempList;
@@ -45,6 +46,10 @@ public:
     void ClearTemp();
     void CompareInfo();
     void myDelay();
+    void showAll_1096();
+    void sendAllToCom();
+    void initAll1096();
+    void dealOneLine(BusLine newBus,int i);
     bool init_flag;
     void getCOM_buf(BusLine newBus);
     bool deal_all_finish;

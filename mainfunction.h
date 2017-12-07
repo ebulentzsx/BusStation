@@ -25,6 +25,9 @@ public:
     void showTitle();
     void showNULL();
     bool checkTime();
+    void initWatchDog();
+    void feedWtachDog();
+
 signals:
     void signal_sendRequest(const QString& strUrl);
     void signal_send_COM(QByteArray buf);

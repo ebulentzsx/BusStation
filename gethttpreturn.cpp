@@ -9,6 +9,8 @@ GetHttpReturn::GetHttpReturn(QObject *parent) :
     init_flag=true;
     deal_all_finish=true;
     lastPort=0;
+    refresh_buf.resize(980);
+    refresh_buf.fill(0x00);
 }
 
 void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult)
@@ -24,6 +26,7 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
             break;
         case GET_SYS_TIME:
             SetSysTime();
+            initAll1096();
             break;
         case GET_ONE_FROM_CQ:
             GetLines();
@@ -37,13 +40,18 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
     {
         strInfor.clear();
         if(p_cmdFlag==GET_SYS_TIME)
+        {
+            qDebug()<<"Get TIME!!! from server Failed!!";
+            initAll1096();
             QProcess::execute("reboot");
+        }
        qDebug()<<"Get from server Failed!!";
        DeviceSetting::error_Reboot++;
        if(DeviceSetting::error_Reboot>5)
        {
 #if    DEBUG_RUN_DESKTOP
 #else
+           initAll1096();
            qDebug()<<"Get from server Failed!!";
            QProcess::execute("reboot");
 #endif
@@ -187,7 +195,6 @@ void  GetHttpReturn::GetLines()
         {
             intId=(intId)/2+11;
         }
-
         tempLine.id=intId;
         if(intId<9)
             tempLine.numPort=1;
@@ -209,7 +216,11 @@ void  GetHttpReturn::GetLines()
         lineList.append(tempLine);
         j=strModel.indexOf(key_GetOne);
     }
-   CompareInfo();
+#if NEW_SHOW_1096
+    showAll_1096();
+#else
+    CompareInfo();
+#endif
 #else
     tempList.clear();
     tempList=lineList;
@@ -386,19 +397,262 @@ void GetHttpReturn::CompareInfo()
 void GetHttpReturn::myDelay()
 {
     DeviceSetting::delaySeconds=0;
-      sleep(1);
+
     while(1)
     {
-         //qDebug()<<"-------myDelay----"<<DeviceSetting::delaySeconds;
-        //sleep(1);
         if(DeviceSetting::delaySeconds==-1)
             break;
     }
-    //qDebug()<<"test"<<test;
-    //DeviceSetting::delaySeconds=-1;
-
-    if( myCOM::writeState==true)
+    sleep(1);
         myCOM::writeState=false;
+}
+
+void GetHttpReturn::showAll_1096()
+{
+    refresh_buf.fill(0x00);
+    int i=0,x;
+    int new_count,tmp_count;
+    u_int8_t disNum;
+    new_count = lineList.count();
+    tmp_count = tempList.count();
+    if((new_count<tmp_count) && (init_flag==false))
+    {
+        qDebug()<<"Refresh from server ERROR!!";
+        return;
+    }
+    deal_all_finish=false;
+    while (i<new_count) {
+        disNum=lineList.at(i).id;
+        //---------------------------------first time
+        if(init_flag)
+        {
+            refresh_buf[12+(lineList.at(i).id-1)*49]=disNum^0x80;
+            dealOneLine(lineList.at(i),13+(lineList.at(i).id-1)*49);
+            i++;
+            continue;
+        }
+        //--------------------------------
+        x=QString::compare(tempList.at(i).CD,lineList.at(i).CD);
+        if((x==0))
+        {
+            refresh_buf[12+(lineList.at(i).id-1)*49]=disNum^0x00;
+            dealOneLine(lineList.at(i),13+(lineList.at(i).id-1)*49);
+            //qDebug()<<"bufPosition"<<bufPosition;
+            i++;
+            continue;
+        }
+        else
+        {
+            refresh_buf[12+(lineList.at(i).id-1)*49]=disNum^0x80;
+            dealOneLine(lineList.at(i),13+(lineList.at(i).id-1)*49);
+            //qDebug()<<"bufPosition"<<bufPosition;
+            i++;
+        }
+
+    }
+    sendAllToCom();
+    init_flag=false;
+    deal_all_finish=true;
+
+}
+
+void GetHttpReturn::sendAllToCom()
+{
+    u_int8_t sum=0;
+    refresh_buf[0]=0x68;
+    for(int i=1;i<7;++i)
+        refresh_buf[i]=0x99;
+    refresh_buf[7]=0x68;
+    refresh_buf[8]=0x04;
+    refresh_buf[9]=0xff;
+    refresh_buf[10]=0x66;
+    refresh_buf[11]=0xdd;
+    for(int j=0;j<980;++j)
+    {
+        refresh_buf[12+j]=(refresh_buf[12+j]+0x33)%256;
+    }
+
+    for(int k=0;k<992;++k)
+    {
+        sum=(sum+refresh_buf[k])%256;
+    }
+    refresh_buf[992]=sum;
+    refresh_buf[993]=0x16;
+    emit signal_writeCom(refresh_buf);//send to COM
+#if DEBUG_PRINT
+    qDebug()<<"----------------sendAllToCOM:"<<refresh_buf;
+#endif
+    myDelay();
+
+}
+
+void GetHttpReturn::initAll1096()
+{
+    refresh_buf.fill(0x00);
+    QByteArray info;
+
+    info.clear();
+
+    info.append(" ");
+    info.append(0xcf);
+    info.append(0xdf);//xian--
+    info.append(" ");
+    info.append(0xc2);
+    info.append(0xb7);//lu--
+    info.append("-");
+
+#if DEBUG_SHOW_DISTANCE
+    //info.append(newBus.BCNO);
+    info.append(0xca);
+    info.append(0xa3);//sheng
+    info.append(0xd3);
+    info.append(0xe0);//yu--
+    info.append(0xd5);
+    info.append(0xbe);//zhan
+    info.append("-");
+    info.append(0xca);
+    info.append(0xa3);//sheng
+    //info.append(" ");
+    info.append(0xd3);
+    info.append(0xe0);//yu--
+    //info.append(" ");
+    info.append(0xbe);
+    info.append(0xe0);//ju
+    //info.append(" ");
+    info.append(0xc0);
+    info.append(0xeb);//li
+#else
+    info.append(0xd6);
+    info.append(0xd5);
+    info.append(0xb5);
+    info.append(0xe3);
+    info.append(0xd5);
+    info.append(0xbe);//zhan
+    info.append("-");
+    info.append(0xca);
+    info.append(0xa3);//sheng
+    info.append(0xd3);
+    info.append(0xe0);//yu--
+    info.append(0xd5);
+    info.append(0xbe);//zhan
+#endif
+    refresh_buf[12]=0x01^0x80;
+    refresh_buf.replace(13,info.length(),info);
+    refresh_buf[502]=0x0b^0x80;
+    refresh_buf.replace(503,info.length(),info);
+    for(u_int8_t i =0;i<20;++i)
+    {
+        if(i==10||i==0)
+            continue;
+        if(i==19)
+        {
+            refresh_buf.replace(13+i*49,11,"  Testing...");
+            refresh_buf[12+i*49]=(i+1)^0x80;
+             continue;
+        }
+        refresh_buf[12+i*49]=(i+1)^0x80;
+        refresh_buf.replace(13+i*49,5,"     ");
+    }
+/* shengyuzhan shengyujuli
+
+*/
+
+    //D5BE zhan
+    //CAA3 sheng
+    //CFDF xian
+    //C2b7 lu
+    //D5BE zhan
+    //BEE0  ju
+    //C0EB  li
+    //D3E0 yu
+    //D6D5 zhong
+    //B5E3 dian
+    //info.right()
+    //info.append("-");
+
+     sendAllToCom();
+
+
+}
+
+void GetHttpReturn::dealOneLine(BusLine newBus,int position)
+{
+
+    QByteArray info;
+    int currentDistance;
+    currentDistance=newBus.CD.length();
+
+    info.clear();
+    u_int8_t sum;
+#if DEBUG_SHOW_DISTANCE
+    info.append(" ");
+#else
+#endif
+    info.append(newBus.BRNO);
+    info.append("-");//xianlu
+#if DEBUG_SHOW_DISTANCE
+#else
+    if(newBus.ESN.length()<4)
+        info.append("NULL");
+    else
+        info.append(newBus.ESN);
+    info.append("-");//zhong dian zhan
+#endif
+
+
+    if(currentDistance<3)
+    {
+#if DEBUG_SHOW_DISTANCE
+        info.append(" - - -");
+        info.append(newBus.BCSta);
+#else
+         info.append(newBus.BCSta);
+#endif
+        /*dai fa che
+
+        //info.append("-");
+       // info.append("-");
+       */
+
+    }
+    else if(currentDistance<7)
+    {
+#if DEBUG_SHOW_DISTANCE
+        info.append(0xca);
+        info.append(0xa3);
+        info.append(QString::number(newBus.LSC));
+        info.append(0xd5);
+        info.append(0xbe);
+        info.append("-");
+        info.append(newBus.CD);
+        info.append(0xc3);
+        info.append(0xd7);//mi
+#else
+
+        info.append(QString::number(newBus.LSC));
+        info.append(0xd5);
+        info.append(0xbe);
+#endif
+    }
+    else
+    {
+#if DEBUG_SHOW_DISTANCE
+        info.append(0xca);
+        info.append(0xa3);
+        info.append(QString::number(newBus.LSC));
+        info.append(0xd5);
+        info.append(0xbe);
+        info.append("-");
+        info.append(newBus.CD);
+#else
+
+        info.append(newBus.CD);
+#endif
+    }
+    uint len=info.length();
+     qDebug()<<"----------------dealOneLine:"<<info;
+    refresh_buf.replace(position,len,info);
+     qDebug()<<"----------------refresh_buf.replace(i,len,info):i--len"<<position<<"--"<<len;
 }
 
 void GetHttpReturn::getCOM_buf(BusLine newBus)
@@ -406,7 +660,7 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
 #if DEBUG_GET_ONE_STATION_FROM_CQ
     QByteArray buf,info;
     int currentDistance;
-   currentDistance=newBus.CD.length();
+    currentDistance=newBus.CD.length();
     buf.clear();
     info.clear();
     u_int8_t sum;
