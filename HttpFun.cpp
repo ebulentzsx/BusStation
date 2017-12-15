@@ -92,8 +92,10 @@ void HttpFun::slot_requestFinished()
         emit signal_requestFinished(false,strResult);//请求失败
         qDebug()<<"请求失败！----------request fail";
     }
+
     m_pNetworkReply->deleteLater();
     this->deleteLater(); //释放内存
+    qDebug()<<"请求ok---------deleteLater()";
 }
 
 //请求超时
@@ -102,6 +104,7 @@ void HttpFun::slot_requestTimeout()
     emit signal_requestFinished(false,"timeout");//请求失败
     m_pNetworkReply->deleteLater();
     this->deleteLater();//释放内存
+    qDebug()<<"请求Timeout---------deleteLater()";
 }
 
 void HttpFun::slot_sendRequest(const QString &strUrl)

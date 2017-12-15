@@ -62,6 +62,7 @@ public:
     //QString programVID;
 signals:
     void signal_writeCom(QByteArray strResult);
+    void signal_startTimer();
 public slots:
     //void slot_get_allstatus();
     void slot_requestFinished(bool bSuccess, const QString &strResult);

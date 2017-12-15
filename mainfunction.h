@@ -36,6 +36,7 @@ signals:
 public slots:
     void slot_sendRequest();
     void slot_writeCom(QByteArray strResult);
+    void slot_startTimer();
 
 private:
 

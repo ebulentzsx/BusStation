@@ -18,18 +18,24 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
 
     if(bSuccess)
     {
+        strInfor.clear();
         DeviceSetting::error_Reboot=0;
         strInfor=strResult;
         switch (p_cmdFlag) {
         case GET_BUS_IFOR:
             GetLines();
+
             break;
         case GET_SYS_TIME:
             SetSysTime();
             initAll1096();
+
             break;
         case GET_ONE_FROM_CQ:
+             qDebug()<<"Get CQ from server Success!!";
             GetLines();
+
+
             break;
         default:
             break;
@@ -58,7 +64,7 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
 
        }
     }
-
+    emit signal_startTimer();
 }
 void GetHttpReturn::SetSysTime()
 {
@@ -104,6 +110,12 @@ void  GetHttpReturn::GetUrl(int cmdFlag)
 void  GetHttpReturn::GetLines()
 {
 #if DEBUG_GET_ONE_STATION_FROM_CQ
+    qDebug()<<"GetLines begin";
+    if(strInfor.length()<200)
+    {
+        qDebug()<<"GetLines error!!";
+        return;
+    }
     tempList.clear();
     tempList=lineList;
     lineList.clear();
@@ -221,6 +233,7 @@ void  GetHttpReturn::GetLines()
 #else
     CompareInfo();
 #endif
+     qDebug()<<"GetLines end";
 #else
     tempList.clear();
     tempList=lineList;
@@ -332,6 +345,7 @@ void  GetHttpReturn::GetLines()
        // qDebug()<<x.id;
     //}
 #endif
+
 }
 void GetHttpReturn::ClearTemp()
 {
@@ -403,7 +417,7 @@ void GetHttpReturn::myDelay()
         if(DeviceSetting::delaySeconds==-1)
             break;
     }
-    sleep(1);
+    sleep(2);
         myCOM::writeState=false;
 }
 
@@ -432,11 +446,15 @@ void GetHttpReturn::showAll_1096()
             continue;
         }
         //--------------------------------
+ #if DEBUG_SHOW_DISTANCE
         x=QString::compare(tempList.at(i).CD,lineList.at(i).CD);
+#else
+        x=tempList.at(i).LSC-lineList.at(i).LSC;
+#endif
         if((x==0))
         {
             refresh_buf[12+(lineList.at(i).id-1)*49]=disNum^0x00;
-            dealOneLine(lineList.at(i),13+(lineList.at(i).id-1)*49);
+            //dealOneLine(lineList.at(i),13+(lineList.at(i).id-1)*49);
             //qDebug()<<"bufPosition"<<bufPosition;
             i++;
             continue;
@@ -528,7 +546,7 @@ void GetHttpReturn::initAll1096()
     info.append(0xe3);
     info.append(0xd5);
     info.append(0xbe);//zhan
-    info.append("-");
+    info.append("---");
     info.append(0xca);
     info.append(0xa3);//sheng
     info.append(0xd3);
@@ -579,6 +597,7 @@ void GetHttpReturn::dealOneLine(BusLine newBus,int position)
 {
 
     QByteArray info;
+
     int currentDistance;
     currentDistance=newBus.CD.length();
 
@@ -588,12 +607,52 @@ void GetHttpReturn::dealOneLine(BusLine newBus,int position)
     info.append(" ");
 #else
 #endif
+    //info.resize(35);
+    //info.replace(0,3,newBus.BRNO);
+    //info.replace(3,1,"-");
     info.append(newBus.BRNO);
     info.append("-");//xianlu
 #if DEBUG_SHOW_DISTANCE
 #else
     if(newBus.ESN.length()<4)
         info.append("NULL");
+    else if(newBus.ESN.length()<8)
+    {
+        info.append("   ");
+        info.append(newBus.ESN);
+        info.append("   ");
+    }
+    else if(newBus.ESN.length()==8)
+    {
+        info.append("   ");
+        info.append(newBus.ESN);
+        info.append("    ");
+    }
+    else if(newBus.ESN.length()<11)
+    {
+        info.append(" ");
+        info.append(newBus.ESN);
+        info.append("  ");
+    }
+    else if(newBus.ESN.length()<13)
+    {
+        info.append(" ");
+        info.append(newBus.ESN);
+        info.append(" ");
+    }
+    else  if(newBus.ESN.length()<15)
+    {
+        info.append(" ");
+        info.append(newBus.ESN);
+
+    }
+    else  if(newBus.ESN.length()<19)
+    {
+        info.append(" ");
+        info.append(newBus.ESN);
+        info.append(" ");
+
+    }
     else
         info.append(newBus.ESN);
     info.append("-");//zhong dian zhan
@@ -606,6 +665,11 @@ void GetHttpReturn::dealOneLine(BusLine newBus,int position)
         info.append(" - - -");
         info.append(newBus.BCSta);
 #else
+
+        if(newBus.BCSta.length()==6)
+            info.append(" ");
+        else
+            info.append("  ");
          info.append(newBus.BCSta);
 #endif
         /*dai fa che
@@ -628,10 +692,14 @@ void GetHttpReturn::dealOneLine(BusLine newBus,int position)
         info.append(0xc3);
         info.append(0xd7);//mi
 #else
-
+        if(newBus.LSC>9)
+            info.append(" ");
+        else
+            info.append("  ");
         info.append(QString::number(newBus.LSC));
         info.append(0xd5);
         info.append(0xbe);
+
 #endif
     }
     else

@@ -3,6 +3,7 @@ void outputMessage(QtMsgType type, const char *msg);
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+     //system("echo 0 >/dev/watchdog");
     //char buf[2014];
     //QProcess::execute("pppd call wcdma&");
 #if    DEBUG_RUN_DESKTOP

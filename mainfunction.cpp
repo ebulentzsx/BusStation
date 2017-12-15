@@ -17,6 +17,7 @@ MainFunction::MainFunction(QObject *parent) :
 
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(slot_sendRequest()));
     QObject::connect(newInfo, SIGNAL(signal_writeCom(QByteArray)), this, SLOT(slot_writeCom(QByteArray)));
+    QObject::connect(newInfo, SIGNAL(signal_startTimer()), this, SLOT(slot_startTimer()));
    // QObject::connect(my_com, SIGNAL(signal_getState(QString)), dealComInfo, SLOT(slot_getState(QString)));
     //QObject::connect(this,SIGNAL(signal_send_COM(QByteArray)),my_com,SLOT(slot_send_COM(QByteArray)));
     //QObject::connect(dealComInfo,SIGNAL(signal_send_cmd()),newInfo,SLOT(slot_get_allstatus()));
@@ -45,13 +46,14 @@ void MainFunction::setSys_time()
      if(checkTime()==false)
      {
          feedWtachDog();
-         sleep(10);
+
          //newInfo->initAll1096();
          if(newInfo->init_flag==false)
          {
             newInfo->initAll1096();
             newInfo->init_flag=true;
          }
+         sleep(30);
          timer->start(REQUEST_INTERVERL);
          return;
      }
@@ -63,8 +65,8 @@ void MainFunction::setSys_time()
      pHttpFun=new HttpFun();
      QObject::connect(pHttpFun,SIGNAL(signal_requestFinished(bool,QString)),newInfo,SLOT(slot_requestFinished(bool,QString)));
      pHttpFun->sendRequest(newInfo->strUrl);
-    qDebug()<<"QTime startinf~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
-     timer->start(REQUEST_INTERVERL);
+
+     //timer->start(REQUEST_INTERVERL);
  }
 
  void MainFunction::slot_writeCom(QByteArray tmp)
@@ -72,10 +74,16 @@ void MainFunction::setSys_time()
 
     QByteArray buf;
     buf.append(tmp);
-    qDebug()<<"in write of main function"<<tmp.toHex();
+    //qDebug()<<"in write of main function"<<tmp.toHex();
     qDebug() << QString("slot in main function thread id: slot_writeCom") << QThread::currentThreadId();
     emit signal_send_COM(tmp);
-     myCOM::waitCount ++;
+    // myCOM::waitCount ++;
+ }
+
+ void MainFunction::slot_startTimer()
+ {
+     timer->start(REQUEST_INTERVERL);
+     qDebug()<<"QTime startinf~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
  }
 
 
@@ -223,7 +231,7 @@ void MainFunction::showNULL()
     uint len=info.length();
     //qDebug()<<"info.length:"<<len;
     //int len=info.count();
-   qDebug()<<"Write the COM info:"<<info;
+  // qDebug()<<"Write the COM info:"<<info;
    // int len=newBus.BRNO.length()+newBus.BCNO.length()+newBus.CD.length();
     buf[0]=0x68;
     for(int i=1;i<7;++i)
@@ -250,7 +258,7 @@ void MainFunction::showNULL()
     while(i<20)
     {
         emit signal_send_COM(buf);
-        qDebug()<<"send to com:showNULL"<<buf.toHex()<<"---int i---"<<i+1;
+        //qDebug()<<"send to com:showNULL"<<buf.toHex()<<"---int i---"<<i+1;
         buf[12]=buf[12]+0x01;
         buf[13+len]=buf[13+len]+0x01;
         i++;
@@ -266,7 +274,7 @@ bool MainFunction::checkTime()
 
     int intTime=strTime.toInt();
     qDebug()<<"Current time ------------------------------:::::::"<<strTime<<"-----int"<<intTime;
-    if(intTime==23 || intTime<5)
+    if(intTime==23 || intTime<6)
         return false;
     else
         return true;
