@@ -17,7 +17,7 @@ void secondFunction::beginLoop()
 
     wtach_timer->start(60*1000);
     wtach_timer->setSingleShot(false);
-    qDebug() << QString("second function thread id:run") << QThread::currentThreadId();
+    qDebug() << QString("second function thread id:beginLoop-----") << QThread::currentThreadId();
 }
 
 void secondFunction::get_all_status()

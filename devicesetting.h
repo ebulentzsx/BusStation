@@ -11,10 +11,11 @@ class DeviceSetting
 public:
     DeviceSetting();
     static QString deviceID;
-    static QString busFd;
+    //static QString busFd;
     static QString programVID;
     static QString serverIP;
     static QString usbSet;
+    static QString stationCode;
     static int delaySeconds;
     static int maxDelaySeconds;
     static int error_Reboot;

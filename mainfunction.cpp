@@ -53,12 +53,13 @@ void MainFunction::setSys_time()
             newInfo->initAll1096();
             newInfo->init_flag=true;
          }
+         newInfo->heartbeatWhenSleep();
          sleep(30);
          timer->start(REQUEST_INTERVERL);
          return;
      }
 #if DEBUG_GET_ONE_STATION_FROM_CQ
-     newInfo->GetUrl(3);
+     newInfo->GetUrl(1);
 #else
      newInfo->GetUrl(1);
 #endif
@@ -83,7 +84,7 @@ void MainFunction::setSys_time()
  void MainFunction::slot_startTimer()
  {
      timer->start(REQUEST_INTERVERL);
-     qDebug()<<"QTime startinf~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+     qDebug()<<"QTime starting~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
  }
 
 
@@ -266,6 +267,8 @@ void MainFunction::showNULL()
     }
 
 }
+
+
 
 bool MainFunction::checkTime()
 {

@@ -53,6 +53,8 @@ public:
     bool init_flag;
     void getCOM_buf(BusLine newBus);
     bool deal_all_finish;
+    void setPowerOff();
+    void heartbeatWhenSleep();
     static bool deal_one_finish;
     //void addActionKey();
     QString strInfor;

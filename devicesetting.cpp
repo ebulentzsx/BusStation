@@ -1,9 +1,9 @@
 #include "devicesetting.h"
 QString DeviceSetting::deviceID=NULL;
-QString DeviceSetting::busFd=NULL;
+QString DeviceSetting::stationCode=NULL;
 QString DeviceSetting::programVID=NULL;
-QString DeviceSetting::serverIP="http://123.207.75.109:10000/YiYangIndex.ashx?ActionKey=";
 QString DeviceSetting::usbSet=NULL;
+QString DeviceSetting::serverIP=NULL;
 int DeviceSetting::delaySeconds=-1;
 int DeviceSetting::maxDelaySeconds=WAIT_COM_RETURN_TIME;
 int DeviceSetting::error_Reboot=0;
@@ -21,6 +21,7 @@ void DeviceSetting::showDeviceInfo()
     qDebug()<<"Program version:"<<DeviceSetting::programVID;
     qDebug()<<"Server IP:"<<DeviceSetting::serverIP;
     qDebug()<<"USB setting:"<<DeviceSetting::usbSet;
+     qDebug()<<"stationCode:"<<DeviceSetting::stationCode;
     foreach (QString x,DeviceSetting::actionKey) {
         qDebug()<<x;
     }
@@ -47,12 +48,14 @@ void DeviceSetting::SetDevicePosition()
 
                 if((i=str.indexOf("id"))>-1)
                     DeviceSetting::deviceID=str.mid(i+3).simplified();
-                if((i=str.indexOf("forword"))>-1)
-                    DeviceSetting::busFd=str.mid(i+8).simplified();
+                if((i=str.indexOf("stationCode"))>-1)
+                    DeviceSetting::stationCode=str.mid(i+12).simplified();
                 if((i=str.indexOf("version"))>-1)
                     DeviceSetting::programVID=str.mid(i+8).simplified();
                 if((i=str.indexOf("usb"))>-1)
                     DeviceSetting::usbSet=str.mid(i+4).simplified();
+                if((i=str.indexOf("serverIP"))>-1)
+                    DeviceSetting::serverIP=str.mid(i+9).simplified();
                  //qDebug()<<"Line:"<< str<<"i="<<i;
             }
             //qDebug()<<"Debug:Local device ID is"<<DeviceSetting::deviceID;
@@ -60,10 +63,27 @@ void DeviceSetting::SetDevicePosition()
             //qDebug()<<"Debug:Local program version is"<<DeviceSetting::programVID;
             fileID.flush();
             fileID.close();
+            if(DeviceSetting::stationCode.length()<3)
+            {
+                qDebug()<<"Statition code Error!!Please check!! Then reboot";
+                sleep(1000);
+            }
+            if(DeviceSetting::serverIP.length()<10)
+            {
+                qDebug()<<"Server IP is NULL !!!";
+                DeviceSetting::serverIP="http://123.207.75.109:10000/YiYangIndex.ashx?ActionKey=";
+                //sleep(1000);
+            }
+            else
+            {
+               DeviceSetting::serverIP=QString("http://%1/YiYangIndex.ashx?ActionKey=").arg( DeviceSetting::serverIP);
+               qDebug()<<"Server IP get from config file:" <<DeviceSetting::serverIP;
+            }
             addActionKey();
-            qDebug()<<"Set device finisheds";
+            qDebug()<<"Set device finished";
         }
-    }else{
+    }else
+    {
         //QMessageBox::critical(this,"测试","文件不存在");
          qDebug()<<"Error:Can not find ID file!!";
     }

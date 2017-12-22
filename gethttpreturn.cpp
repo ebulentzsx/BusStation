@@ -48,23 +48,43 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
         if(p_cmdFlag==GET_SYS_TIME)
         {
             qDebug()<<"Get TIME!!! from server Failed!!";
-            initAll1096();
-            QProcess::execute("reboot");
-        }
-       qDebug()<<"Get from server Failed!!";
-       DeviceSetting::error_Reboot++;
-       if(DeviceSetting::error_Reboot>5)
-       {
-#if    DEBUG_RUN_DESKTOP
-#else
-           initAll1096();
-           qDebug()<<"Get from server Failed!!";
-           QProcess::execute("reboot");
-#endif
+            //initAll1096();
+            QFile errFile("./errFile");
+            if(errFile.exists())
+            {   system("rm errFile");
+                qDebug()<<"rm errFile Get TIME!!! from server Failed!!";
+                setPowerOff();
 
-       }
+                //powe off and reboot
+            }
+            else
+            {
+                //touch errFile
+                system("touch errFile");
+                qDebug()<<"touch errFile Get TIME!!! from server Failed!!";
+                QProcess::execute("reboot");
+            }
+            return;
+        }
+        if(p_cmdFlag==GET_BUS_IFOR){
+            init_flag=true;
+            qDebug()<<"Get bus informatioan from server Failed!!";
+            DeviceSetting::error_Reboot++;
+            sleep(DeviceSetting::error_Reboot);
+            if(DeviceSetting::error_Reboot>5)
+            {
+     #if    DEBUG_RUN_DESKTOP
+     #else
+                initAll1096();
+                qDebug()<<"Get from server Failed!!";
+                QProcess::execute("reboot");
+     #endif
+            }
+        }
+
     }
-    emit signal_startTimer();
+     emit signal_startTimer();
+
 }
 void GetHttpReturn::SetSysTime()
 {
@@ -85,21 +105,69 @@ void GetHttpReturn::SetSysTime()
     qDebug()<<"Get time from server SUCCESS"<<stime;
 
 }
+void GetHttpReturn::setPowerOff()
+{
+    QByteArray buf;
+    buf.resize(14);
+    buf.clear();
 
+  // qDebug()<<"Write the COM info:"<<info;
+
+    buf[0]=0x68;
+    for(int i=1;i<7;++i)
+        buf[i]=0x99;
+    buf[7]=0x68;
+    buf[8]=0x04;
+    //68 99 99 99 99 99 99 68 04 02 73 DD BC 16
+    buf[9]=0x02;
+    buf[10]=0x73;
+    buf[11]=0xdd;
+    buf[12]=0xbc;
+    buf[13]=0x16;
+    emit signal_writeCom(buf);
+
+    qDebug()<<"setPowerOff:"<<buf.toHex();
+    sleep(20);
+
+}
+
+void GetHttpReturn::heartbeatWhenSleep()
+{
+    QByteArray buf;
+    buf.resize(14);
+    buf.clear();
+
+  // qDebug()<<"Write the COM info:"<<info;
+
+    buf[0]=0x68;
+    for(int i=1;i<7;++i)
+    buf[i]=0x99;
+    buf[7]=0x68;
+    buf[8]=0x04;
+    //68 99 99 99 99 99 99 68 04 02 74 DD BD 16
+    buf[9]=0x02;
+    buf[10]=0x74;
+    buf[11]=0xdd;
+    buf[12]=0xbd;
+    buf[13]=0x16;
+    emit signal_writeCom(buf);
+     qDebug()<<"heartbeatWhenSleep:"<<buf.toHex();
+}
 void  GetHttpReturn::GetUrl(int cmdFlag)
+//http://123.207.75.109:10001/YiYangIndex.ashx?ActionKey=GCQSD&stationCode=B170-1
 {
     //QString strUrl = "http://113.108.61.26:10000/YiYangIndex.ashx?ActionKey=GBRDBDNO&deviceNumber=1314&busForward=1";
     strUrl.clear();
     switch (cmdFlag) {
     case GET_BUS_IFOR:
         //strUrl= SERVER_IP+QString( "GBRDBDNO&deviceNumber=%1&busForward=%2").arg(deviceID).arg(busFd);
-        strUrl= SERVER_IP+QString( "GBRDBDNO&deviceNumber=%1").arg(DeviceSetting::deviceID);
+        strUrl= DeviceSetting::serverIP+QString( "GCQSD&stationCode=%1").arg(DeviceSetting::stationCode);
         break;
     case GET_SYS_TIME:
-        strUrl= SERVER_IP+QString("GCSDT");
+        strUrl= DeviceSetting::serverIP+QString("GCSDT");
         break;
     case GET_ONE_FROM_CQ:
-        strUrl= SERVER_IP+QString("GCQD");
+        strUrl= DeviceSetting::serverIP+QString("GCQD");
         break;
     default:
         break;
@@ -122,7 +190,7 @@ void  GetHttpReturn::GetLines()
     int j=0;
     QString key_model="model";
     QString key_BCNO="BCNO";
-    QString key_BCSta="BCSta";
+    QString key_VNO="VNO";
     QString key_STime="STime";
     QString key_BRNO="BRNO";
     QString key_BF="BF";
@@ -135,7 +203,7 @@ void  GetHttpReturn::GetLines()
     QString key_Dot=",";
     QString key_GetOneR="}";
     QString strBCNO;
-    QString strBCSta;
+    QString strVNO;
     QString strSTime;
     QString strBRNO;
     QString strBF;
@@ -156,8 +224,8 @@ void  GetHttpReturn::GetLines()
         strBCNO=strModel.mid(strModel.indexOf(key_BCNO)+7);
         strBCNO=strBCNO.mid(0,strBCNO.indexOf(key_Split));
 
-        strBCSta=strModel.mid(strModel.indexOf(key_BCSta)+8);
-        strBCSta=strBCSta.mid(0,strBCSta.indexOf(key_Split));
+        strVNO=strModel.mid(strModel.indexOf(key_VNO)+6);
+        strVNO=strVNO.mid(0,strVNO.indexOf(key_Split));
 
         strESN=strModel.mid(strModel.indexOf(key_ESN)+6);
         strESN=strESN.mid(0,strESN.indexOf(key_Split));
@@ -220,10 +288,10 @@ void  GetHttpReturn::GetLines()
         tempLine.BRNO=strBRNO;
         tempLine.LSC=intLSC;
         tempLine.CD=strCD;
-        tempLine.BCSta=strBCSta;
+        tempLine.BCSta=strVNO;
         tempLine.STime=strSTime;
         tempLine.ESN=strESN;
-
+        tempLine.VNO=strVNO;
         tempLine.MSG=strBRNO+"--"+strBCNO+"--"+strLSC+"--"+strCD;
         lineList.append(tempLine);
         j=strModel.indexOf(key_GetOne);
@@ -423,19 +491,27 @@ void GetHttpReturn::myDelay()
 
 void GetHttpReturn::showAll_1096()
 {
-    refresh_buf.fill(0x00);
+    //refresh_buf.fill(0x00);
     int i=0,x;
     int new_count,tmp_count;
     u_int8_t disNum;
     new_count = lineList.count();
     tmp_count = tempList.count();
-    if((new_count<tmp_count) && (init_flag==false))
+    if((new_count!=tmp_count) && (init_flag==false))
     {
         qDebug()<<"Refresh from server ERROR!!";
+        init_flag=true;
         return;
     }
+    int reDisplay;
+    reDisplay=new_count-17;
     deal_all_finish=false;
     while (i<new_count) {
+        //When lines' number is more than 18,it should be deal again
+        if( i>17 && (i%18==0))
+        {
+            sendAllToCom();
+        }
         disNum=lineList.at(i).id;
         //---------------------------------first time
         if(init_flag)
@@ -453,7 +529,13 @@ void GetHttpReturn::showAll_1096()
 #endif
         if((x==0))
         {
-            refresh_buf[12+(lineList.at(i).id-1)*49]=disNum^0x00;
+                if(i%18<reDisplay)
+                {
+                    refresh_buf[12+(lineList.at(i).id-1)*49]=disNum^0x80;
+                    dealOneLine(lineList.at(i),13+(lineList.at(i).id-1)*49);
+                }
+                else
+                    refresh_buf[12+(lineList.at(i).id-1)*49]=disNum^0x00;
             //dealOneLine(lineList.at(i),13+(lineList.at(i).id-1)*49);
             //qDebug()<<"bufPosition"<<bufPosition;
             i++;
@@ -501,6 +583,7 @@ void GetHttpReturn::sendAllToCom()
     qDebug()<<"----------------sendAllToCOM:"<<refresh_buf;
 #endif
     myDelay();
+    refresh_buf.fill(0x00);
 
 }
 
@@ -511,13 +594,13 @@ void GetHttpReturn::initAll1096()
 
     info.clear();
 
-    info.append(" ");
+
     info.append(0xcf);
     info.append(0xdf);//xian--
     info.append(" ");
     info.append(0xc2);
     info.append(0xb7);//lu--
-    info.append("-");
+    info.append("  ");
 
 #if DEBUG_SHOW_DISTANCE
     //info.append(newBus.BCNO);
@@ -527,7 +610,7 @@ void GetHttpReturn::initAll1096()
     info.append(0xe0);//yu--
     info.append(0xd5);
     info.append(0xbe);//zhan
-    info.append("-");
+    info.append(" ");
     info.append(0xca);
     info.append(0xa3);//sheng
     //info.append(" ");
@@ -542,11 +625,13 @@ void GetHttpReturn::initAll1096()
 #else
     info.append(0xd6);
     info.append(0xd5);
+    //info.append(" ");
     info.append(0xb5);
     info.append(0xe3);
+    //info.append(" ");
     info.append(0xd5);
     info.append(0xbe);//zhan
-    info.append("---");
+    info.append("    ");
     info.append(0xca);
     info.append(0xa3);//sheng
     info.append(0xd3);
@@ -564,9 +649,9 @@ void GetHttpReturn::initAll1096()
             continue;
         if(i==19)
         {
-            refresh_buf.replace(13+i*49,11,"  Testing...");
-            refresh_buf[12+i*49]=(i+1)^0x80;
-             continue;
+         //   refresh_buf.replace(13+i*49,11,"  Testing...");
+          //  refresh_buf[12+i*49]=(i+1)^0x80;
+        //     continue;
         }
         refresh_buf[12+i*49]=(i+1)^0x80;
         refresh_buf.replace(13+i*49,5,"     ");
@@ -611,20 +696,29 @@ void GetHttpReturn::dealOneLine(BusLine newBus,int position)
     //info.replace(0,3,newBus.BRNO);
     //info.replace(3,1,"-");
     info.append(newBus.BRNO);
-    info.append("-");//xianlu
+    if(newBus.BRNO.length()==3)
+        info.append(" ");//xianlu
 #if DEBUG_SHOW_DISTANCE
 #else
-    if(newBus.ESN.length()<4)
+    int tmepESN_Length=0;
+    tmepESN_Length=newBus.ESN.length();
+    if(tmepESN_Length<4)
         info.append("NULL");
-    else if(newBus.ESN.length()<8)
+    else if(tmepESN_Length<5)
     {
-        info.append("   ");
+        info.append(" ");
         info.append(newBus.ESN);
-        info.append("   ");
+        info.append("      ");
     }
-    else if(newBus.ESN.length()==8)
+    else if(tmepESN_Length<7)
     {
-        info.append("   ");
+        info.append(" ");
+        info.append(newBus.ESN);
+        info.append("     ");
+    }
+    else if(newBus.ESN.length()<9)
+    {
+        info.append(" ");
         info.append(newBus.ESN);
         info.append("    ");
     }
@@ -632,45 +726,105 @@ void GetHttpReturn::dealOneLine(BusLine newBus,int position)
     {
         info.append(" ");
         info.append(newBus.ESN);
-        info.append("  ");
+        info.append("   ");
     }
     else if(newBus.ESN.length()<13)
     {
         info.append(" ");
         info.append(newBus.ESN);
-        info.append(" ");
+        info.append("  ");
     }
     else  if(newBus.ESN.length()<15)
     {
         info.append(" ");
         info.append(newBus.ESN);
-
+        info.append(" ");
     }
-    else  if(newBus.ESN.length()<19)
+    else  if(newBus.ESN.length()<17)
     {
         info.append(" ");
         info.append(newBus.ESN);
+        //info.append(" ");
+    }
+    else if(newBus.ESN.length()<19)
+    {
         info.append(" ");
-
+        newBus.ESN=newBus.ESN.left(16);
+        info.append(newBus.ESN);
+    }
+   // info.append(" ");//zhong dian zhan
+#endif
+#if  DEBUG_SHOW_0_ZHAN
+    if(newBus.LSC>0)
+    {
+        if(newBus.LSC<10)
+             info.append(" ");
+        info.append(QString::number(newBus.LSC));
+        info.append(0xd5);
+        info.append(0xbe);
+        info.append(" ");
     }
     else
-        info.append(newBus.ESN);
-    info.append("-");//zhong dian zhan
-#endif
+    {
+        if(newBus.VNO.length()==6)
+        {
+            info.append(newBus.VNO);
+            info.append(" ");
+        }
+        else
+        {
+            info.append(0xd5);
+            info.append(0xfd);
+            info.append(0xd4);
+            info.append(0xda);
+            info.append(0xbd);
+            info.append(0xf8);
+            info.append(0xd5);
+            info.append(0xbe);
+        }
+
+    }
+#else
 
 
-    if(currentDistance<3)
+    if(currentDistance<2 )
     {
 #if DEBUG_SHOW_DISTANCE
-        info.append(" - - -");
+        info.append("    ");
         info.append(newBus.BCSta);
 #else
 
         if(newBus.BCSta.length()==6)
+        {
             info.append(" ");
-        else
-            info.append("  ");
-         info.append(newBus.BCSta);
+
+            info.append(0xb4);
+            info.append(0xfd);
+            info.append(0xb7);
+            info.append(0xa2);
+            info.append(0xb3);
+            info.append(0xb5);
+        }
+        //B4FD DAI
+        //B7A2 FA
+        //B3B5 CHE
+            //BCB4 JI
+            //BDAB JIANG
+            //B5BD DAO
+            //D5BE zhan
+            //info.append(" ");
+            /*
+            info.append(0xbc);
+            info.append(0xb4);
+            info.append(0xbd);
+            info.append(0xab);
+            info.append(0xb5);
+            info.append(0xbd);
+            info.append(0xd5);
+            info.append(0xbe);
+*/
+
+
 #endif
         /*dai fa che
 
@@ -679,7 +833,7 @@ void GetHttpReturn::dealOneLine(BusLine newBus,int position)
        */
 
     }
-    else if(currentDistance<7)
+    if(currentDistance<7)
     {
 #if DEBUG_SHOW_DISTANCE
         info.append(0xca);
@@ -687,19 +841,21 @@ void GetHttpReturn::dealOneLine(BusLine newBus,int position)
         info.append(QString::number(newBus.LSC));
         info.append(0xd5);
         info.append(0xbe);
-        info.append("-");
+        info.append(" ");
         info.append(newBus.CD);
         info.append(0xc3);
         info.append(0xd7);//mi
 #else
-        if(newBus.LSC>9)
-            info.append(" ");
-        else
-            info.append("  ");
-        info.append(QString::number(newBus.LSC));
-        info.append(0xd5);
-        info.append(0xbe);
-
+        if(newBus.BCSta.length()!=6)
+        {
+            if(newBus.LSC>9)
+                 info.append(" ");
+            else
+                 info.append("  ");
+            info.append(QString::number(newBus.LSC));
+            info.append(0xd5);
+            info.append(0xbe);
+        }
 #endif
     }
     else
@@ -710,13 +866,14 @@ void GetHttpReturn::dealOneLine(BusLine newBus,int position)
         info.append(QString::number(newBus.LSC));
         info.append(0xd5);
         info.append(0xbe);
-        info.append("-");
+        info.append(" ");
         info.append(newBus.CD);
 #else
 
         info.append(newBus.CD);
 #endif
     }
+#endif
     uint len=info.length();
      qDebug()<<"----------------dealOneLine:"<<info;
     refresh_buf.replace(position,len,info);
