@@ -5,6 +5,8 @@ secondFunction::secondFunction(QObject *parent) :
 {
 
      secTimer=0;
+     countTimer=-1;
+
      wtach_timer = new QTimer();
      wetherFinished=true;
      QObject::connect(wtach_timer, SIGNAL(timeout()), this, SLOT(slot_pubulic_timer()));
@@ -15,8 +17,9 @@ secondFunction::secondFunction(QObject *parent) :
 void secondFunction::beginLoop()
 {
 
-    wtach_timer->start(60*1000);
-    wtach_timer->setSingleShot(false);
+    wtach_timer->start(80*1000);
+    wtach_timer->setSingleShot(true);
+
     qDebug() << QString("second function thread id:beginLoop-----") << QThread::currentThreadId();
 }
 
@@ -85,7 +88,7 @@ void secondFunction::postSunLog()
    qDebug()<<"outputVoltage:"<<outputVoltage;
    qDebug()<<"outputCurrent:"<<outputCurrent;
    post_url.clear();
-   post_url= SERVER_IP+QString("%1&deviceNumber=%2&outputVoltage=%3&outputCurrent=%4&deviceStatus=%5")
+   post_url= DeviceSetting::hostIP+QString("%1&deviceNumber=%2&outputVoltage=%3&outputCurrent=%4&deviceStatus=%5")
            .arg(DeviceSetting::actionKey.at(2))
            .arg(DeviceSetting::deviceID)
            .arg(QString::fromLocal8Bit(outputVoltage))
@@ -146,6 +149,15 @@ void secondFunction::postBatteryLog()
     tnBatteryV.append(tmp_HardwareInfo[11]-0x33);
     tnBatteryV.append(tmp_HardwareInfo[11]-0x33);
 }
+
+void secondFunction::heartBeatToNet()
+{
+    post_url.clear();
+  //  post_url= SERVER_IP+QString("UBRST&stationCode=%1").arg(DeviceSetting::stationCode);
+    post_url= DeviceSetting::hostIP+QString("UBRST&stationCode=%1").arg(DeviceSetting::stationCode);
+    qDebug()<<"------------------heartBeatToNet]--->post_url:"<<post_url;
+    updateToServer();
+}
 void secondFunction::slot_getState(const QString &strResult)
 {
     QByteArray info;
@@ -176,25 +188,48 @@ void secondFunction::slot_getState(const QString &strResult)
 
 void secondFunction::slot_init_watch()
 {
+    //heartBeatToNet();
     beginLoop();
     qDebug() << QString("slot in second function thread id:slot_init_watch") << QThread::currentThreadId();
 }
 
 void secondFunction::slot_requestFinished(bool bSuccess, const QString &strResult)
 {
+    qDebug()<<"secondFunction:::::::slot_requestFinished";
     if(bSuccess)
     {
         wetherFinished=true;
+        qDebug()<<"----------------slot_requestFinished"<<post_url;
     }
     else
     {
         qDebug()<<"Second function get internet Error!";
 
     }
+   // wtach_timer->start(600*1000);
 }
 
 void secondFunction::slot_pubulic_timer()
 {
+    if(countTimer==-1)
+    {
+        //haertbeat
+        heartBeatToNet();
+    }
+
+    countTimer++;
+    if(countTimer==2)
+    {
+        //haertbeat
+        heartBeatToNet();
+        countTimer=0;
+    }
+     else
+    {
+       // qDebug() << QString("slot in second function thread id:slot_send_get_status") << QThread::currentThreadId();
+        secTimer=0;
+        //update hardware information
+    }
 /*
     if(DeviceSetting::delaySeconds>-1)
     {
@@ -207,7 +242,9 @@ void secondFunction::slot_pubulic_timer()
     {
 */
      //Second funcion do
-        qDebug() << QString("slot in second function thread id:slot_send_get_status") << QThread::currentThreadId();
+        qDebug() << QString("slot in second function thread id:slot_pubulic_timer") << QThread::currentThreadId();
+        wtach_timer->start(600*1000);
+        wtach_timer->setSingleShot(true);
         secTimer=0;
 #if GET_ONE_FROM_CQ
 #else

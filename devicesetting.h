@@ -16,6 +16,7 @@ public:
     static QString serverIP;
     static QString usbSet;
     static QString stationCode;
+    static QString hostIP;
     static int delaySeconds;
     static int maxDelaySeconds;
     static int error_Reboot;

@@ -53,6 +53,7 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
             if(errFile.exists())
             {   system("rm errFile");
                 qDebug()<<"rm errFile Get TIME!!! from server Failed!!";
+                sleep(2);
                 setPowerOff();
 
                 //powe off and reboot
@@ -62,6 +63,7 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
                 //touch errFile
                 system("touch errFile");
                 qDebug()<<"touch errFile Get TIME!!! from server Failed!!";
+                 sleep(2);
                 QProcess::execute("reboot");
             }
             return;
@@ -71,7 +73,7 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
             qDebug()<<"Get bus informatioan from server Failed!!";
             DeviceSetting::error_Reboot++;
             sleep(DeviceSetting::error_Reboot);
-            if(DeviceSetting::error_Reboot>5)
+            if(DeviceSetting::error_Reboot>4)
             {
      #if    DEBUG_RUN_DESKTOP
      #else
@@ -247,7 +249,7 @@ void  GetHttpReturn::GetLines()
 
         strLSC=strModel.mid(strModel.indexOf(key_LSC)+5);
         //intLSC=strLSC.mid(0,1).toInt();
-        strLSC=strLSC.mid(0,1);
+        strLSC=strLSC.mid(0,strLSC.indexOf(key_Dot));
         intLSC=strLSC.toInt();
         BusLine tempLine ;
         /*
@@ -757,9 +759,13 @@ void GetHttpReturn::dealOneLine(BusLine newBus,int position)
 #if  DEBUG_SHOW_0_ZHAN
     if(newBus.LSC>0)
     {
+       //newBus.LSC=newBus.LSC+9;
         if(newBus.LSC<10)
-             info.append(" ");
-        info.append(QString::number(newBus.LSC));
+            info.append(" ");
+
+        info.append(QString::number(newBus.LSC,10));
+       // qDebug()<<"----------------newBus.LSC:"<<newBus.LSC<<"---INFO:"<<info;
+        //QString::number();
         info.append(0xd5);
         info.append(0xbe);
         info.append(" ");
@@ -769,6 +775,8 @@ void GetHttpReturn::dealOneLine(BusLine newBus,int position)
         if(newBus.VNO.length()==6)
         {
             info.append(newBus.VNO);
+           //  qDebug()<<"----------------newBus.VNO.toHex:"<<newBus.LSC;
+             //B4FD`
             info.append(" ");
         }
         else

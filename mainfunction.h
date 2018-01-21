@@ -27,6 +27,7 @@ public:
     bool checkTime();
     void initWatchDog();
     void feedWtachDog();
+    void firstHeartBeat();
 
 signals:
     void signal_sendRequest(const QString& strUrl);

@@ -31,7 +31,7 @@ void MainFunction::setSys_time()
     pHttpFun=new HttpFun();
     QObject::connect(pHttpFun,SIGNAL(signal_requestFinished(bool,QString)),newInfo,SLOT(slot_requestFinished(bool,QString)));
     pHttpFun->sendRequest(newInfo->strUrl);
-    qDebug() << QString("slot in main function thread id:setSys_time") << QThread::currentThreadId();
+    qDebug() << QString("setSys_time-----------slot in main function thread id:setSys_time") << QThread::currentThreadId();
 }
  void MainFunction::slot_sendRequest()
  {
@@ -54,8 +54,8 @@ void MainFunction::setSys_time()
             newInfo->init_flag=true;
          }
          newInfo->heartbeatWhenSleep();
-         sleep(30);
-         timer->start(REQUEST_INTERVERL);
+         //sleep(30);
+         timer->start(30000);
          return;
      }
 #if DEBUG_GET_ONE_STATION_FROM_CQ
@@ -94,6 +94,8 @@ void MainFunction::beginLoop()
 {
 
     setSys_time();
+    //sleep(3);
+    //firstHeartBeat();
     timer->start(REQUEST_INTERVERL);
     timer->setSingleShot( true );
 
@@ -277,8 +279,9 @@ bool MainFunction::checkTime()
 
     int intTime=strTime.toInt();
     qDebug()<<"Current time ------------------------------:::::::"<<strTime<<"-----int"<<intTime;
-    if(intTime==23 || intTime<6)
-        return false;
+    if(intTime==23 || intTime<5)
+       return false;
+       // return true;
     else
         return true;
 
@@ -290,7 +293,18 @@ void MainFunction::initWatchDog()
 }
 void MainFunction::feedWtachDog()
 {
-     system("echo 0 >/dev/watchdog");
+    system("echo 0 >/dev/watchdog");
+}
+
+void MainFunction::firstHeartBeat()
+{
+     QString heartBeatUrl;
+     newInfo->p_cmdFlag=-1;
+     heartBeatUrl= DeviceSetting::hostIP+QString("UBRST&stationCode=%1").arg(DeviceSetting::stationCode);
+     pHttpFun=new HttpFun();
+     QObject::connect(pHttpFun,SIGNAL(signal_requestFinished(bool,QString)),newInfo,SLOT(slot_requestFinished(bool,QString)));
+     pHttpFun->sendRequest(heartBeatUrl);
+     qDebug()<<"------------------firstHeartBeat--->heartBeatUrl:"<<heartBeatUrl;
 }
 
 

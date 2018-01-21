@@ -20,9 +20,11 @@ public:
     void updateAllToServer();
     void postSunLog();
     void postBatteryLog();
+    void heartBeatToNet();
     static int delaySeconds;
     static int maxDelaySeconds;
     int secTimer;
+    int countTimer;
     QString post_url;
     QByteArray tmp_HardwareInfo;
     HttpFun *secHttp;

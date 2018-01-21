@@ -4,6 +4,7 @@ QString DeviceSetting::stationCode=NULL;
 QString DeviceSetting::programVID=NULL;
 QString DeviceSetting::usbSet=NULL;
 QString DeviceSetting::serverIP=NULL;
+QString DeviceSetting::hostIP=NULL;
 int DeviceSetting::delaySeconds=-1;
 int DeviceSetting::maxDelaySeconds=WAIT_COM_RETURN_TIME;
 int DeviceSetting::error_Reboot=0;
@@ -56,6 +57,8 @@ void DeviceSetting::SetDevicePosition()
                     DeviceSetting::usbSet=str.mid(i+4).simplified();
                 if((i=str.indexOf("serverIP"))>-1)
                     DeviceSetting::serverIP=str.mid(i+9).simplified();
+                if((i=str.indexOf("hostIP"))>-1)
+                    DeviceSetting::hostIP=str.mid(i+7).simplified();
                  //qDebug()<<"Line:"<< str<<"i="<<i;
             }
             //qDebug()<<"Debug:Local device ID is"<<DeviceSetting::deviceID;
@@ -71,13 +74,24 @@ void DeviceSetting::SetDevicePosition()
             if(DeviceSetting::serverIP.length()<10)
             {
                 qDebug()<<"Server IP is NULL !!!";
-                DeviceSetting::serverIP="http://123.207.75.109:10000/YiYangIndex.ashx?ActionKey=";
+                DeviceSetting::serverIP="http://http://123.207.239.144:10001/YiYangIndex.ashx?ActionKey=";
                 //sleep(1000);
             }
             else
             {
                DeviceSetting::serverIP=QString("http://%1/YiYangIndex.ashx?ActionKey=").arg( DeviceSetting::serverIP);
                qDebug()<<"Server IP get from config file:" <<DeviceSetting::serverIP;
+            }
+            if(DeviceSetting::hostIP.length()<10)
+            {
+                qDebug()<<"host  IP is NULL !!!";
+                DeviceSetting::hostIP="http://http://123.207.239.144:10001/YiYangIndex.ashx?ActionKey=";
+                //sleep(1000);
+            }
+            else
+            {
+               DeviceSetting::hostIP=QString("http://%1/YiYangIndex.ashx?ActionKey=").arg( DeviceSetting::hostIP);
+               qDebug()<<"host   IP  get from config file:" <<DeviceSetting::hostIP;
             }
             addActionKey();
             qDebug()<<"Set device finished";
@@ -103,6 +117,8 @@ void DeviceSetting::addActionKey()
     DeviceSetting::actionKey.append("USMS");
     DeviceSetting::actionKey.append("GUGBDN");
     DeviceSetting::actionKey.append("UUGBDN");
+    DeviceSetting::actionKey.append("UBRST");
+
 }
 
 void DeviceSetting::initDevice()
