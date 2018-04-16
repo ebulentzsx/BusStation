@@ -8,9 +8,10 @@ int main(int argc, char *argv[])
     //QProcess::execute("pppd call wcdma&");
 #if    DEBUG_RUN_DESKTOP
 #else
-    qDebug() <<"<*-------------------------------------------20180117 1056--------------------------------------*>";
+    qDebug() <<"<*-------------------------------------------20180412 1617--------------------------------------*>";
+    sleep(3);
     system("pppd call wcdma&");
-    sleep(16);
+    sleep(13);
 #endif
     testEnv();
 
@@ -31,7 +32,7 @@ int main(int argc, char *argv[])
     MainFunction *mm=new MainFunction();
     QObject::connect(mm,SIGNAL(signal_init_COM()),my_com,SLOT(slot_init()));
     QObject::connect(mm,SIGNAL(signal_send_COM(QByteArray)),my_com,SLOT(slot_send_COM(QByteArray)));
-    QObject::connect(my_com,SIGNAL(signal_getState(QString)),watch_function,SLOT(slot_getState(QString)));
+    QObject::connect(my_com,SIGNAL(signal_getState(QByteArray)),watch_function,SLOT(slot_getState(QByteArray)));
     QObject::connect(mm,SIGNAL(signal_init_watch()),watch_function,SLOT(slot_init_watch()));
     QObject::connect(watch_function,SIGNAL(signal_send_com(QByteArray)),my_com,SLOT(slot_send_COM(QByteArray)));
 

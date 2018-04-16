@@ -37,7 +37,7 @@ public:
     void run();
 signals:
     void signal_getErrorMsg(int code, const QString &strResult);
-    void signal_getState(const QString &strResult);
+    void signal_getState(QByteArray strResult);
     void signal_COM_error(bool com_state);
 public slots:
     void slot_getStateFromCom(const QString &tmp);

@@ -29,7 +29,7 @@ void readComThread::run()
             qDebug()<<"Read OK!Receive:"<<temp.toHex();
 
             emit signal_getStateFromCom(temp);
-            //readCom->
+
             temp.clear();
         }
         //msleep(200);

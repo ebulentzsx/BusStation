@@ -18,15 +18,15 @@ public:
     void get_all_status();
     void updateToServer();
     void updateAllToServer();
-    void postSunLog();
     void postBatteryLog();
+    void postAll(QByteArray strResult);
     void heartBeatToNet();
     static int delaySeconds;
     static int maxDelaySeconds;
     int secTimer;
     int countTimer;
     QString post_url;
-    QByteArray tmp_HardwareInfo;
+    //QByteArray tmp_HardwareInfo;
     HttpFun *secHttp;
     DeviceSetting busDev;
     bool wetherFinished;
@@ -34,7 +34,7 @@ public:
 signals:
     void signal_send_com(QByteArray tmp);
 public slots:
-    void slot_getState(const QString &strResult);
+    void slot_getState(QByteArray strResult);
     void slot_init_watch();
     void slot_requestFinished(bool bSuccess, const QString &strResult);
     void  slot_pubulic_timer();

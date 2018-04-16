@@ -18,7 +18,7 @@ MainFunction::MainFunction(QObject *parent) :
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(slot_sendRequest()));
     QObject::connect(newInfo, SIGNAL(signal_writeCom(QByteArray)), this, SLOT(slot_writeCom(QByteArray)));
     QObject::connect(newInfo, SIGNAL(signal_startTimer()), this, SLOT(slot_startTimer()));
-   // QObject::connect(my_com, SIGNAL(signal_getState(QString)), dealComInfo, SLOT(slot_getState(QString)));
+    //QObject::connect(my_com, SIGNAL(signal_getState(QByteArray)), dealComInfo, SLOT(slot_getState(QByteArray)));
     //QObject::connect(this,SIGNAL(signal_send_COM(QByteArray)),my_com,SLOT(slot_send_COM(QByteArray)));
     //QObject::connect(dealComInfo,SIGNAL(signal_send_cmd()),newInfo,SLOT(slot_get_allstatus()));
 }
