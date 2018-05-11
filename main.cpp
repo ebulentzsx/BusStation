@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     //QProcess::execute("pppd call wcdma&");
 #if    DEBUG_RUN_DESKTOP
 #else
-    qDebug() <<"<*-------------------------------------------20180412 1617--------------------------------------*>";
+    qDebug() <<"<*-------------------------------------------20180503 0921--------------------------------------*>";
     sleep(3);
     system("pppd call wcdma&");
     sleep(13);

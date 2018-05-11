@@ -106,7 +106,7 @@ BatteryTheoreticalStock.append('.');
 BatteryTheoreticalStock.append(tmp_HardwareInfo[34]-0x33);
 BatteryTheoreticalStock.append(tmp_HardwareInfo[35]-0x33);
 
-BatteryTemperature.append('TBD');
+BatteryTemperature.append("TBD");
     /*-------------------------------------002
     LiBattteryVoltageStatus：锂电池电压状态：1是高压，0是低压
     QdBtnBatteryVoltageStatus：驱动板纽扣电池电压状态：1是正常，0是异常
@@ -299,7 +299,7 @@ if(BoxDownDoorStatus==0x00)
 if(SolarEnergyStatus==0x00)
     SolarEnergyStatus=0x30;
 //&BusStationCode=Z576-1 &BatteryStatus=1&BatteryOutputVoltage=10&BatteryOutputCurrent=5.0&BatteryTheoreticalStock=10&BatteryTemperature=18&BatterySolarChargeStatus=1&BatteryCityChargeStatus=0&LiBattteryVoltageStatus=0&QdBtnBatteryVoltageStatus=1&QdBtnBatteryVoltage=110&ControlVoltage=220&ControlElectricCurrent=10&ControlPowerStatus=1&ControlLcdStatus=1&ControlConnectStatus=1&LedStatus=1&LedPowerStatus=0&BodyRedStatus=1&PhotosensitiveCtrlStatus=0&LedSupplyVoltage=220&LedVoltage=0.5&LedCurrent=0.6&BoxInnerTemp=18&BoxInnerHumidity=19&BoxShockStatus=1&BoxShockCount=123&BoxHornStatus=1&BoxHornCount=180&BoxUpDoorStatus=0&BoxUpDoorOpenCount=333&BoxDownDoorStatus=1&BoxDownDoorOpenCount=334&SolarEnergyStatus=1&SolarEnergyOutputVoltage=18.5&SolarEnergyOutputCurrent=16.9
-post_url= DeviceSetting::hostIP+QString("%1&BusStationCode=%2&BatteryStatus=%3&BatteryOutputVoltage=%4&BatteryOutputCurrent=%5&BatteryTheoreticalStock=%6&BatteryTemperature=%7&BatterySolarChargeStatus=%8&BatteryCityChargeStatus=%9&LiBattteryVoltageStatus=%10&QdBtnBatteryVoltageStatus=%11&QdBtnBatteryVoltage=%12&ControlVoltage=%13&ControlElectricCurrent=%14&ControlPowerStatus=%15&ControlLcdStatus=%16&ControlConnectStatus=%17&LedStatus=%18&LedPowerStatus=%19&BodyRedStatus=%20&PhotosensitiveCtrlStatus=%21&LedSupplyVoltage=%22&LedVoltage=%23&LedCurrent=%24&BoxInnerTemp=%25&BoxInnerHumidity=%26&BoxShockStatus=%27&BoxShockCount=%28&BoxHornStatus=%29&BoxHornCount=%30&BoxUpDoorStatus=%31&BoxUpDoorOpenCount=%32&BoxDownDoorStatus=33&BoxDownDoorOpenCount=%34&SolarEnergyStatus=%35&SolarEnergyOutputVoltage=%36&SolarEnergyOutputCurrent=%37")
+post_url= DeviceSetting::hostIP+QString("%1&BusStationCode=%2&BatteryStatus=%3&BatteryOutputVoltage=%4&BatteryOutputCurrent=%5&BatteryTheoreticalStock=%6&BatteryTemperature=%7&BatterySolarChargeStatus=%8&BatteryCityChargeStatus=%9&LiBattteryVoltageStatus=%10&QdBtnBatteryVoltageStatus=%11&QdBtnBatteryVoltage=%12&ControlVoltage=%13&ControlElectricCurrent=%14&ControlPowerStatus=%15&ControlLcdStatus=%16&ControlConnectStatus=%17&LedStatus=%18&LedPowerStatus=%19&BodyRedStatus=%20&PhotosensitiveCtrlStatus=%21&LedSupplyVoltage=%22&LedVoltage=%23&LedCurrent=%24&BoxInnerTemp=%25&BoxInnerHumidity=%26&BoxShockStatus=%27&BoxShockCount=%28&BoxHornStatus=%29&BoxHornCount=%30&BoxUpDoorStatus=%31&BoxUpDoorOpenCount=%32&BoxDownDoorStatus=%33&BoxDownDoorOpenCount=%34&SolarEnergyStatus=%35&SolarEnergyOutputVoltage=%36&SolarEnergyOutputCurrent=%37")
         .arg(DeviceSetting::actionKey.at(5))
         .arg(DeviceSetting::stationCode)
         .arg(BatteryStatus)
@@ -338,6 +338,8 @@ post_url= DeviceSetting::hostIP+QString("%1&BusStationCode=%2&BatteryStatus=%3&B
         .arg(QString::fromLocal8Bit(SolarEnergyOutputVoltage))
         .arg(QString::fromLocal8Bit(SolarEnergyOutputCurrent));
 qDebug()<<"post_url:"<<post_url;
+qDebug()<<"SolarEnergyOutputVoltage:"<<SolarEnergyOutputVoltage;
+qDebug()<<"SolarEnergyOutputCurrent:"<<SolarEnergyOutputCurrent;
 updateToServer();
 }
 

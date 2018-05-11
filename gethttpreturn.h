@@ -34,6 +34,7 @@ class GetHttpReturn : public QObject
 public:
     int p_cmdFlag;
     int lastPort;
+    int serverNoUpdateFlag;
     QByteArray refresh_buf;
     explicit GetHttpReturn(QObject *parent = 0);
    //QLinkedList <BusLine> lineList,tempList;
@@ -55,6 +56,7 @@ public:
     bool deal_all_finish;
     void setPowerOff();
     void heartbeatWhenSleep();
+    void getVersionFromReturn();
     static bool deal_one_finish;
     //void addActionKey();
     QString strInfor;

@@ -28,6 +28,8 @@ public:
     void initWatchDog();
     void feedWtachDog();
     void firstHeartBeat();
+    void getVersionInfo();
+    void getNewVersion();
 
 signals:
     void signal_sendRequest(const QString& strUrl);

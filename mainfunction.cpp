@@ -52,20 +52,44 @@ void MainFunction::setSys_time()
          {
             newInfo->initAll1096();
             newInfo->init_flag=true;
+            // check and update from SERVER
+         //http://123.207.239.144:10000/YiYangIndex.ashx?ActionKey=GUGBDN&stationCode=G0473
          }
          newInfo->heartbeatWhenSleep();
          //sleep(30);
          timer->start(30000);
          return;
      }
-#if DEBUG_GET_ONE_STATION_FROM_CQ
+if(DeviceSetting::serverNoUpdate==0 || DeviceSetting::serverNoUpdate==2)
+{
      newInfo->GetUrl(1);
-#else
-     newInfo->GetUrl(1);
-#endif
+
      pHttpFun=new HttpFun();
      QObject::connect(pHttpFun,SIGNAL(signal_requestFinished(bool,QString)),newInfo,SLOT(slot_requestFinished(bool,QString)));
      pHttpFun->sendRequest(newInfo->strUrl);
+}
+//DeviceSetting::serverNoUpdate==1  Found server noupdate,record to server
+//DeviceSetting::serverNoUpdate==2  Have known update,keep upadte cation.set to 2 after recording
+//DeviceSetting::serverNoUpdate==3  Found server noupdate rescue,record to server.set to 3 after recording(rescue)
+//DeviceSetting::serverNoUpdate==0
+
+else  if(DeviceSetting::serverNoUpdate==1)
+{
+
+        newInfo->GetUrl(SERVER_NO_UPDATE);
+        pHttpFun=new HttpFun();
+        QObject::connect(pHttpFun,SIGNAL(signal_requestFinished(bool,QString)),newInfo,SLOT(slot_requestFinished(bool,QString)));
+        pHttpFun->sendRequest(newInfo->strUrl);
+        DeviceSetting::serverNoUpdate=2;
+}
+else  if(DeviceSetting::serverNoUpdate==3)
+{
+        DeviceSetting::serverNoUpdate=0;
+        newInfo->GetUrl(SERVER_NO_UPDATE);
+        pHttpFun=new HttpFun();
+        QObject::connect(pHttpFun,SIGNAL(signal_requestFinished(bool,QString)),newInfo,SLOT(slot_requestFinished(bool,QString)));
+        pHttpFun->sendRequest(newInfo->strUrl);
+}
 
      //timer->start(REQUEST_INTERVERL);
  }
@@ -305,6 +329,20 @@ void MainFunction::firstHeartBeat()
      QObject::connect(pHttpFun,SIGNAL(signal_requestFinished(bool,QString)),newInfo,SLOT(slot_requestFinished(bool,QString)));
      pHttpFun->sendRequest(heartBeatUrl);
      qDebug()<<"------------------firstHeartBeat--->heartBeatUrl:"<<heartBeatUrl;
+}
+
+void MainFunction::getVersionInfo()
+{
+//http://123.207.239.144:10000/YiYangIndex.ashx?ActionKey=GUGBDN&stationCode=G0473
+    newInfo->GetUrl(GET_VERSION_INFOMATION);
+    pHttpFun=new HttpFun();
+    QObject::connect(pHttpFun,SIGNAL(signal_requestFinished(bool,QString)),newInfo,SLOT(slot_requestFinished(bool,QString)));
+    pHttpFun->sendRequest(newInfo->strUrl);
+}
+
+void MainFunction::getNewVersion()
+{
+
 }
 
 

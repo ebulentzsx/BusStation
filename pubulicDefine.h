@@ -8,6 +8,7 @@
 #define GET_BUS_IFOR 1
 #define GET_SYS_TIME 2
 #define GET_ONE_FROM_CQ 3
+#define SERVER_NO_UPDATE 4
 //#define SERVER_IP "http://123.207.75.109:10000/YiYangIndex.ashx?ActionKey="
 //#define HEARTBEAT_IP "http://123.207.75.109:10000/YiYangIndex.ashx?ActionKey=UBRST&stationCode="
 #define REQUEST_INTERVERL 4500
@@ -21,5 +22,6 @@
 #define NEW_SHOW_1096 1
 #define DEBUG_PRINT 0
 #define DEBUG_SHOW_0_ZHAN 1
+#define GET_VERSION_INFOMATION 5
 //68 99 99 99 99 99 99 68 04 02 73 DD BC 16
 #endif // PUBULICDEFINE_H

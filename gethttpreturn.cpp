@@ -9,6 +9,7 @@ GetHttpReturn::GetHttpReturn(QObject *parent) :
     init_flag=true;
     deal_all_finish=true;
     lastPort=0;
+    serverNoUpdateFlag=0;
     refresh_buf.resize(980);
     refresh_buf.fill(0x00);
 }
@@ -75,13 +76,17 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
             sleep(DeviceSetting::error_Reboot);
             if(DeviceSetting::error_Reboot>4)
             {
-     #if    DEBUG_RUN_DESKTOP
-     #else
                 initAll1096();
                 qDebug()<<"Get from server Failed!!";
                 QProcess::execute("reboot");
-     #endif
+
             }
+            return;
+        }
+        if(p_cmdFlag==GET_VERSION_INFOMATION)
+        {
+            //determine whether need update
+            return;
         }
 
     }
@@ -153,7 +158,76 @@ void GetHttpReturn::heartbeatWhenSleep()
     buf[12]=0xbd;
     buf[13]=0x16;
     emit signal_writeCom(buf);
-     qDebug()<<"heartbeatWhenSleep:"<<buf.toHex();
+    qDebug()<<"heartbeatWhenSleep:"<<buf.toHex();
+}
+
+void GetHttpReturn::getVersionFromReturn()
+{
+    qDebug()<<"GetLines begin";
+    if(strInfor.length()<200)
+    {
+        qDebug()<<"getVersionFromReturn error!!";
+        return;
+    }
+    QString key_model="model";
+    QString key_AppCurrentVersion="AppCurrentVersion";
+    QString key_AppTargetVersion="AppTargetVersion";
+    QString key_AppIsUpGradeComplete="AppIsUpGradeComplete";
+    QString key_AppUpGradeFile="AppUpGradeFile";
+
+    QString key_PicCurrentVersion="PicCurrentVersion";
+    QString key_PicTargetVersion="PicTargetVersion";
+    QString key_PicIsUpGradeComplete="PicIsUpGradeComplete";
+    QString key_PicupGradeFile="PicupGradeFile";
+
+    QString key_Dot=",";
+    QString key_String="\"";
+
+    QString AppCurrentVersion;
+    QString AppTargetVersion;
+    QString AppIsUpGradeComplete;
+    QString AppUpGradeFile;
+
+    QString PicCurrentVersion;
+    QString PicTargetVersion;
+    QString PicIsUpGradeComplete;
+    QString PicupGradeFile;
+
+    QString strModel=strInfor.mid(strInfor.indexOf(key_model)+8);
+
+
+        AppCurrentVersion=strModel.mid(strModel.indexOf(key_AppCurrentVersion)+19);
+        AppCurrentVersion=AppCurrentVersion.mid(0,strBCNO.indexOf(key_Dot));
+
+        AppTargetVersion=strModel.mid(strModel.indexOf(key_AppTargetVersion)+18);
+        AppTargetVersion=AppTargetVersion.mid(0,strBCNO.indexOf(key_Dot));
+
+        AppIsUpGradeComplete=strModel.mid(strModel.indexOf(key_AppIsUpGradeComplete)+22);
+        AppIsUpGradeComplete=AppIsUpGradeComplete.mid(0,strBCNO.indexOf(key_Dot));
+
+        AppUpGradeFile=strModel.mid(strModel.indexOf(key_AppUpGradeFile)+17);
+        AppUpGradeFile=AppUpGradeFile.mid(0,strBCNO.indexOf(key_String));
+
+        PicCurrentVersion=strModel.mid(strModel.indexOf(key_PicCurrentVersion)+19);
+        PicCurrentVersion=PicCurrentVersion.mid(0,strBCNO.indexOf(key_Dot));
+
+        PicTargetVersion=strModel.mid(strModel.indexOf(key_PicTargetVersion)+18);
+        PicTargetVersion=PicTargetVersion.mid(0,strBCNO.indexOf(key_Dot));
+
+        PicIsUpGradeComplete=strModel.mid(strModel.indexOf(key_PicIsUpGradeComplete)+22);
+        PicIsUpGradeComplete=PicIsUpGradeComplete.mid(0,strBCNO.indexOf(key_Dot));
+
+        PicupGradeFile=strModel.mid(strModel.indexOf(key_PicupGradeFile)+17);
+        PicupGradeFile=PicupGradeFile.mid(0,strBCNO.indexOf(key_String));
+
+    if(true)
+    {//download last version
+         QString downloadString="curl -m 5 -O http://www.cqfog.com.cn:10000/";
+         downloadString=downloadString+AppUpGradeFile;
+          system(key_String);
+         qDebug()<<"downloadString :"<<downloadString;
+    }
+
 }
 void  GetHttpReturn::GetUrl(int cmdFlag)
 //http://123.207.75.109:10001/YiYangIndex.ashx?ActionKey=GCQSD&stationCode=B170-1
@@ -170,6 +244,12 @@ void  GetHttpReturn::GetUrl(int cmdFlag)
         break;
     case GET_ONE_FROM_CQ:
         strUrl= DeviceSetting::serverIP+QString("GCQD");
+        break;
+    case SERVER_NO_UPDATE:
+        strUrl= DeviceSetting::hostIP+QString("ADDSILOG&status=%1").arg(1-DeviceSetting::serverNoUpdate);
+        break;
+    case GET_VERSION_INFOMATION:
+        strUrl= DeviceSetting::hostIP+QString("GUGBDN&stationCode=%1").arg(DeviceSetting::stationCode);
         break;
     default:
         break;
@@ -493,6 +573,7 @@ void GetHttpReturn::myDelay()
 
 void GetHttpReturn::showAll_1096()
 {
+    int updateFlag=0;
     //refresh_buf.fill(0x00);
     int i=0,x;
     int new_count,tmp_count;
@@ -531,6 +612,7 @@ void GetHttpReturn::showAll_1096()
 #endif
         if((x==0))
         {
+
                 if(i%18<reDisplay)
                 {
                     refresh_buf[12+(lineList.at(i).id-1)*49]=disNum^0x80;
@@ -545,15 +627,42 @@ void GetHttpReturn::showAll_1096()
         }
         else
         {
+            updateFlag=1;
             refresh_buf[12+(lineList.at(i).id-1)*49]=disNum^0x80;
             dealOneLine(lineList.at(i),13+(lineList.at(i).id-1)*49);
             //qDebug()<<"bufPosition"<<bufPosition;
             i++;
+
         }
 
     }
     sendAllToCom();
     init_flag=false;
+if(updateFlag<1)
+{
+    serverNoUpdateFlag++;
+    if(serverNoUpdateFlag==10)
+       {
+        serverNoUpdateFlag=9;
+        if( DeviceSetting::serverNoUpdate==0)
+                DeviceSetting::serverNoUpdate=1; //report to server!!
+        qDebug()<<"Server NOUPDATE found!";
+       }
+}
+else
+{
+    if(serverNoUpdateFlag==9)
+    {
+        DeviceSetting::serverNoUpdate=3;
+        qDebug()<<"Server NOUPDATE rescue!";
+    }
+    else
+        DeviceSetting::serverNoUpdate=0;
+    serverNoUpdateFlag=0;
+}
+
+qDebug()<<"updateFlag--"<<updateFlag<<"serverNoUpdateFlag--"<<serverNoUpdateFlag<<"DeviceSetting::serverNoUpdate--"<<DeviceSetting::serverNoUpdate;
+ qDebug()<<"showAll_1096 end!!";
     deal_all_finish=true;
 
 }
@@ -1132,13 +1241,7 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
 //{
     myDelay();
 #endif
-    //msleep(1500);
-    //QThread::msleep(1500);
-   // if(newBus.id==9 || newBus.id==10 || newBus.id==19 || newBus.id==20)
-
-//}
-    // emit signal_writeCom(0x6899999999999968041B44DD3469656A530903041EECDE07E3E9DEF5EA53E726060D6908F1C216);
-}
+   }
 
 
 

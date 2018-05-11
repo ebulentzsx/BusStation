@@ -5,10 +5,12 @@ QString DeviceSetting::programVID=NULL;
 QString DeviceSetting::usbSet=NULL;
 QString DeviceSetting::serverIP=NULL;
 QString DeviceSetting::hostIP=NULL;
+QString DeviceSetting::picVersion=NULL;
 int DeviceSetting::delaySeconds=-1;
 int DeviceSetting::maxDelaySeconds=WAIT_COM_RETURN_TIME;
 int DeviceSetting::error_Reboot=0;
 int DeviceSetting::com_error_Reboot=0;
+int DeviceSetting::serverNoUpdate =0;
 QList<QString>  DeviceSetting::actionKey;
 DeviceSetting::DeviceSetting()
 {
@@ -59,6 +61,8 @@ void DeviceSetting::SetDevicePosition()
                     DeviceSetting::serverIP=str.mid(i+9).simplified();
                 if((i=str.indexOf("hostIP"))>-1)
                     DeviceSetting::hostIP=str.mid(i+7).simplified();
+                if((i=str.indexOf("picVersion"))>-1)
+                    DeviceSetting::picVersion=str.mid(i+11).simplified();
                  //qDebug()<<"Line:"<< str<<"i="<<i;
             }
             //qDebug()<<"Debug:Local device ID is"<<DeviceSetting::deviceID;
@@ -118,6 +122,7 @@ void DeviceSetting::addActionKey()
     DeviceSetting::actionKey.append("GUGBDN");
     DeviceSetting::actionKey.append("UUGBDN");
     DeviceSetting::actionKey.append("UBRST");
+    DeviceSetting::actionKey.append("ADDSILOG");
 
 }
 

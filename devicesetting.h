@@ -17,10 +17,12 @@ public:
     static QString usbSet;
     static QString stationCode;
     static QString hostIP;
+    static QString picVersion;
     static int delaySeconds;
     static int maxDelaySeconds;
     static int error_Reboot;
     static int com_error_Reboot;
+    static int serverNoUpdate;
 
 
     static QList<QString> actionKey;
