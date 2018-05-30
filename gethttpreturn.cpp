@@ -197,35 +197,38 @@ void GetHttpReturn::getVersionFromReturn()
 
 
         AppCurrentVersion=strModel.mid(strModel.indexOf(key_AppCurrentVersion)+19);
-        AppCurrentVersion=AppCurrentVersion.mid(0,strBCNO.indexOf(key_Dot));
+        AppCurrentVersion=AppCurrentVersion.mid(0,AppCurrentVersion.indexOf(key_Dot));
 
         AppTargetVersion=strModel.mid(strModel.indexOf(key_AppTargetVersion)+18);
-        AppTargetVersion=AppTargetVersion.mid(0,strBCNO.indexOf(key_Dot));
+        AppTargetVersion=AppTargetVersion.mid(0,AppTargetVersion.indexOf(key_Dot));
 
         AppIsUpGradeComplete=strModel.mid(strModel.indexOf(key_AppIsUpGradeComplete)+22);
-        AppIsUpGradeComplete=AppIsUpGradeComplete.mid(0,strBCNO.indexOf(key_Dot));
+        AppIsUpGradeComplete=AppIsUpGradeComplete.mid(0,AppIsUpGradeComplete.indexOf(key_Dot));
 
         AppUpGradeFile=strModel.mid(strModel.indexOf(key_AppUpGradeFile)+17);
-        AppUpGradeFile=AppUpGradeFile.mid(0,strBCNO.indexOf(key_String));
+        AppUpGradeFile=AppUpGradeFile.mid(0,AppUpGradeFile.indexOf(key_String));
 
         PicCurrentVersion=strModel.mid(strModel.indexOf(key_PicCurrentVersion)+19);
-        PicCurrentVersion=PicCurrentVersion.mid(0,strBCNO.indexOf(key_Dot));
+        PicCurrentVersion=PicCurrentVersion.mid(0,PicCurrentVersion.indexOf(key_Dot));
 
         PicTargetVersion=strModel.mid(strModel.indexOf(key_PicTargetVersion)+18);
-        PicTargetVersion=PicTargetVersion.mid(0,strBCNO.indexOf(key_Dot));
+        PicTargetVersion=PicTargetVersion.mid(0,PicTargetVersion.indexOf(key_Dot));
 
         PicIsUpGradeComplete=strModel.mid(strModel.indexOf(key_PicIsUpGradeComplete)+22);
-        PicIsUpGradeComplete=PicIsUpGradeComplete.mid(0,strBCNO.indexOf(key_Dot));
+        PicIsUpGradeComplete=PicIsUpGradeComplete.mid(0,PicIsUpGradeComplete.indexOf(key_Dot));
 
         PicupGradeFile=strModel.mid(strModel.indexOf(key_PicupGradeFile)+17);
-        PicupGradeFile=PicupGradeFile.mid(0,strBCNO.indexOf(key_String));
+        PicupGradeFile=PicupGradeFile.mid(0,PicupGradeFile.indexOf(key_String));
 
-    if(true)
+    if(0==QString::compare("true",AppIsUpGradeComplete,Qt::CaseInsensitive))
     {//download last version
+        if(0==QString::compare(AppCurrentVersion,AppTargetVersion,Qt::CaseInsensitive))
+        {
          QString downloadString="curl -m 5 -O http://www.cqfog.com.cn:10000/";
-         downloadString=downloadString+AppUpGradeFile;
-          system(key_String);
+         downloadString.append(AppUpGradeFile);
+   //      system(downloadString.toStdString());
          qDebug()<<"downloadString :"<<downloadString;
+        }
     }
 
 }

@@ -8,6 +8,7 @@
 #include <QFile>
 #include <QVector>
 #include <QThread>
+#include <stdio.h>
 #include "busline.h"
 #include "devicesetting.h"
 #include "mycom.h"
