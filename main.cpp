@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 
     DeviceSetting my_Bus;
     my_Bus.initDevice();
-
+    my_Bus.intAppVersion("V2018070501");
     myCOM *my_com;
     my_com=new myCOM();
 

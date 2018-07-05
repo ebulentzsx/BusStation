@@ -35,7 +35,9 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
         case GET_ONE_FROM_CQ:
              qDebug()<<"Get CQ from server Success!!";
             GetLines();
-
+            break;
+        case GET_VERSION_INFOMATION:
+            getVersionFromReturn();
 
             break;
         default:
@@ -79,13 +81,13 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
                 initAll1096();
                 qDebug()<<"Get from server Failed!!";
                 QProcess::execute("reboot");
-
             }
             return;
         }
         if(p_cmdFlag==GET_VERSION_INFOMATION)
         {
             //determine whether need update
+            //getVersionFromReturn();
             return;
         }
 
@@ -96,8 +98,9 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
 void GetHttpReturn::SetSysTime()
 {
 
-    qDebug()<<"Get time from server SUCCESS"<<stime;
+
     QString stime=strInfor.mid(strInfor.indexOf("model")+8,19);
+     qDebug()<<"Get time from server SUCCESS"<<stime;
     stime.remove(4,1);
     stime.remove(6,1);
     stime.insert(4,".");
@@ -224,10 +227,10 @@ void GetHttpReturn::getVersionFromReturn()
     {//download last version
         if(0==QString::compare(AppCurrentVersion,AppTargetVersion,Qt::CaseInsensitive))
         {
-         QString downloadString="curl -m 5 -O http://www.cqfog.com.cn:10000/";
+         QByteArray downloadString="curl -m 5 -O http://www.cqfog.com.cn:10000/";
          downloadString.append(AppUpGradeFile);
-   //      system(downloadString.toStdString());
-         qDebug()<<"downloadString :"<<downloadString;
+         system(downloadString);
+         qDebug()<<"-----downloadString in shell:"<<downloadString;
         }
     }
 
@@ -630,7 +633,7 @@ void GetHttpReturn::showAll_1096()
         }
         else
         {
-            updateFlag=1;
+            updateFlag++;
             refresh_buf[12+(lineList.at(i).id-1)*49]=disNum^0x80;
             dealOneLine(lineList.at(i),13+(lineList.at(i).id-1)*49);
             //qDebug()<<"bufPosition"<<bufPosition;
@@ -644,9 +647,9 @@ void GetHttpReturn::showAll_1096()
 if(updateFlag<1)
 {
     serverNoUpdateFlag++;
-    if(serverNoUpdateFlag==10)
+    if(serverNoUpdateFlag==30)
        {
-        serverNoUpdateFlag=9;
+        serverNoUpdateFlag=29;
         if( DeviceSetting::serverNoUpdate==0)
                 DeviceSetting::serverNoUpdate=1; //report to server!!
         qDebug()<<"Server NOUPDATE found!";
@@ -654,7 +657,7 @@ if(updateFlag<1)
 }
 else
 {
-    if(serverNoUpdateFlag==9)
+    if(DeviceSetting::serverNoUpdate==2)
     {
         DeviceSetting::serverNoUpdate=3;
         qDebug()<<"Server NOUPDATE rescue!";
@@ -665,7 +668,7 @@ else
 }
 
 qDebug()<<"updateFlag--"<<updateFlag<<"serverNoUpdateFlag--"<<serverNoUpdateFlag<<"DeviceSetting::serverNoUpdate--"<<DeviceSetting::serverNoUpdate;
- qDebug()<<"showAll_1096 end!!";
+qDebug()<<"showAll_1096 end!!";
     deal_all_finish=true;
 
 }
@@ -797,11 +800,11 @@ void GetHttpReturn::dealOneLine(BusLine newBus,int position)
 
     QByteArray info;
 
-    int currentDistance;
-    currentDistance=newBus.CD.length();
+   // int currentDistance;
+    //currentDistance=newBus.CD.length();
 
     info.clear();
-    u_int8_t sum;
+  //  u_int8_t sum;
 #if DEBUG_SHOW_DISTANCE
     info.append(" ");
 #else
@@ -1093,7 +1096,7 @@ void GetHttpReturn::getCOM_buf(BusLine newBus)
     //info.append("-");
 
     //info.append("/n");
-    uint len=info.length();
+    int len=info.length();
     //qDebug()<<"info.length:"<<len;
     //int len=info.count();
    qDebug()<<"----------------------------------------------------------------------------------------------------------Write the COM info:"<<newBus.id<<"---"<<info;

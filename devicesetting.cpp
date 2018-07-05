@@ -6,6 +6,7 @@ QString DeviceSetting::usbSet=NULL;
 QString DeviceSetting::serverIP=NULL;
 QString DeviceSetting::hostIP=NULL;
 QString DeviceSetting::picVersion=NULL;
+QString DeviceSetting::appVersion=NULL;
 int DeviceSetting::delaySeconds=-1;
 int DeviceSetting::maxDelaySeconds=WAIT_COM_RETURN_TIME;
 int DeviceSetting::error_Reboot=0;
@@ -131,4 +132,9 @@ void DeviceSetting::initDevice()
     SetDevicePosition();
     showDeviceInfo();
     //addActionKey();
+}
+
+void DeviceSetting::intAppVersion(QString tmpVersion)
+{
+    DeviceSetting::appVersion=tmpVersion;
 }

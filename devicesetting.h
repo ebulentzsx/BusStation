@@ -18,6 +18,7 @@ public:
     static QString stationCode;
     static QString hostIP;
     static QString picVersion;
+    static QString appVersion;
     static int delaySeconds;
     static int maxDelaySeconds;
     static int error_Reboot;
@@ -31,6 +32,7 @@ public:
     void SetDevicePosition();
     void addActionKey();
     void initDevice();
+    void intAppVersion(QString tmpVersion);
 };
 
 #endif // DEVICESETTING_H

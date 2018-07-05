@@ -69,9 +69,9 @@ if(DeviceSetting::serverNoUpdate==0 || DeviceSetting::serverNoUpdate==2)
      pHttpFun->sendRequest(newInfo->strUrl);
 }
 //DeviceSetting::serverNoUpdate==1  Found server noupdate,record to server
-//DeviceSetting::serverNoUpdate==2  Have known update,keep upadte cation.set to 2 after recording
+//DeviceSetting::serverNoUpdate==2  Have known update,keep upadte acation.set to 2 after recording
 //DeviceSetting::serverNoUpdate==3  Found server noupdate rescue,record to server.set to 3 after recording(rescue)
-//DeviceSetting::serverNoUpdate==0
+//DeviceSetting::serverNoUpdate==0  Normall state
 
 else  if(DeviceSetting::serverNoUpdate==1)
 {
@@ -224,8 +224,8 @@ void MainFunction::showTitle()
     //info.append(" ");
 
    // info.append(" ");
-
-    for(int j=0;j<len;++j)
+    uint j;
+    for(j=0;j<len;++j)
     {
         buf[13+j]=(info[j]+0x33)%256;
     }
@@ -269,7 +269,8 @@ void MainFunction::showNULL()
     buf[10]=0x66;
     buf[11]=0xdd;
     buf[12]=0x01+0x33;
-    for(int j=0;j<len;++j)
+    uint j;
+    for(j=0;j<len;++j)
     {
         buf[13+j]=(info[j]+0x33)%256;
     }
@@ -338,6 +339,7 @@ void MainFunction::getVersionInfo()
     pHttpFun=new HttpFun();
     QObject::connect(pHttpFun,SIGNAL(signal_requestFinished(bool,QString)),newInfo,SLOT(slot_requestFinished(bool,QString)));
     pHttpFun->sendRequest(newInfo->strUrl);
+
 }
 
 void MainFunction::getNewVersion()
