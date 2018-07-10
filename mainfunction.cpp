@@ -43,6 +43,10 @@ void MainFunction::setSys_time()
          timer->start(REQUEST_INTERVERL);
          return;
      }
+     //-----------------20180710 Debug test
+    getVersionInfo();
+    return;
+    //----------------20180710 Debug test
      if(checkTime()==false)
      {
          feedWtachDog();
@@ -325,7 +329,7 @@ void MainFunction::firstHeartBeat()
 {
      QString heartBeatUrl;
      newInfo->p_cmdFlag=-1;
-     heartBeatUrl= DeviceSetting::hostIP+QString("UBRST&stationCode=%1").arg(DeviceSetting::stationCode);
+     heartBeatUrl= DeviceSetting::serverIP+QString("UBRSSDS&stationCode=%1&deviceStatus=2%").arg(DeviceSetting::stationCode).arg(DeviceSetting::errCode);
      pHttpFun=new HttpFun();
      QObject::connect(pHttpFun,SIGNAL(signal_requestFinished(bool,QString)),newInfo,SLOT(slot_requestFinished(bool,QString)));
      pHttpFun->sendRequest(heartBeatUrl);

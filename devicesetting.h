@@ -24,6 +24,7 @@ public:
     static int error_Reboot;
     static int com_error_Reboot;
     static int serverNoUpdate;
+    static int errCode;
 
 
     static QList<QString> actionKey;

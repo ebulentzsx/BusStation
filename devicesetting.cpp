@@ -12,6 +12,7 @@ int DeviceSetting::maxDelaySeconds=WAIT_COM_RETURN_TIME;
 int DeviceSetting::error_Reboot=0;
 int DeviceSetting::com_error_Reboot=0;
 int DeviceSetting::serverNoUpdate =0;
+int DeviceSetting::errCode=1;
 QList<QString>  DeviceSetting::actionKey;
 DeviceSetting::DeviceSetting()
 {

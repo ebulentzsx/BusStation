@@ -87,7 +87,7 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
         if(p_cmdFlag==GET_VERSION_INFOMATION)
         {
             //determine whether need update
-            //getVersionFromReturn();
+            qDebug()<<"getVersionFromReturn()";
             return;
         }
 
@@ -166,7 +166,7 @@ void GetHttpReturn::heartbeatWhenSleep()
 
 void GetHttpReturn::getVersionFromReturn()
 {
-    qDebug()<<"GetLines begin";
+    qDebug()<<"getVersionFromReturn begin";
     if(strInfor.length()<200)
     {
         qDebug()<<"getVersionFromReturn error!!";
@@ -201,38 +201,112 @@ void GetHttpReturn::getVersionFromReturn()
 
         AppCurrentVersion=strModel.mid(strModel.indexOf(key_AppCurrentVersion)+19);
         AppCurrentVersion=AppCurrentVersion.mid(0,AppCurrentVersion.indexOf(key_Dot));
+        qDebug()<<"AppCurrentVersion"<<AppCurrentVersion;
 
-        AppTargetVersion=strModel.mid(strModel.indexOf(key_AppTargetVersion)+18);
-        AppTargetVersion=AppTargetVersion.mid(0,AppTargetVersion.indexOf(key_Dot));
+        AppTargetVersion=strModel.mid(strModel.indexOf(key_AppTargetVersion)+19);
+        AppTargetVersion=AppTargetVersion.mid(0,AppTargetVersion.indexOf(key_String));
+        qDebug()<<"AppTargetVersion"<<AppTargetVersion;
 
         AppIsUpGradeComplete=strModel.mid(strModel.indexOf(key_AppIsUpGradeComplete)+22);
         AppIsUpGradeComplete=AppIsUpGradeComplete.mid(0,AppIsUpGradeComplete.indexOf(key_Dot));
+        qDebug()<<"AppIsUpGradeComplete"<<AppIsUpGradeComplete;
 
         AppUpGradeFile=strModel.mid(strModel.indexOf(key_AppUpGradeFile)+17);
         AppUpGradeFile=AppUpGradeFile.mid(0,AppUpGradeFile.indexOf(key_String));
+        qDebug()<<"AppUpGradeFile"<<AppUpGradeFile;
 
         PicCurrentVersion=strModel.mid(strModel.indexOf(key_PicCurrentVersion)+19);
         PicCurrentVersion=PicCurrentVersion.mid(0,PicCurrentVersion.indexOf(key_Dot));
+        qDebug()<<"PicCurrentVersion"<<PicCurrentVersion;
 
-        PicTargetVersion=strModel.mid(strModel.indexOf(key_PicTargetVersion)+18);
-        PicTargetVersion=PicTargetVersion.mid(0,PicTargetVersion.indexOf(key_Dot));
+        PicTargetVersion=strModel.mid(strModel.indexOf(key_PicTargetVersion)+19);
+        PicTargetVersion=PicTargetVersion.mid(0,PicTargetVersion.indexOf(key_String));
+        qDebug()<<"PicTargetVersion"<<PicTargetVersion;
 
         PicIsUpGradeComplete=strModel.mid(strModel.indexOf(key_PicIsUpGradeComplete)+22);
         PicIsUpGradeComplete=PicIsUpGradeComplete.mid(0,PicIsUpGradeComplete.indexOf(key_Dot));
+        qDebug()<<"PicIsUpGradeComplete"<<PicIsUpGradeComplete;
 
         PicupGradeFile=strModel.mid(strModel.indexOf(key_PicupGradeFile)+17);
         PicupGradeFile=PicupGradeFile.mid(0,PicupGradeFile.indexOf(key_String));
+        qDebug()<<"PicupGradeFile"<<PicupGradeFile;
 
-    if(0==QString::compare("true",AppIsUpGradeComplete,Qt::CaseInsensitive))
+    if(0==QString::compare("false",AppIsUpGradeComplete,Qt::CaseInsensitive))
     {//download last version
-        if(0==QString::compare(AppCurrentVersion,AppTargetVersion,Qt::CaseInsensitive))
+        if(0!=QString::compare(DeviceSetting::appVersion,AppTargetVersion,Qt::CaseInsensitive))
         {
          QByteArray downloadString="curl -m 5 -O http://www.cqfog.com.cn:10000/";
          downloadString.append(AppUpGradeFile);
          system(downloadString);
          qDebug()<<"-----downloadString in shell:"<<downloadString;
+         //replace the new app
+         QString tmpNewAPPDir;
+         tmpNewAPPDir="/root/"+AppTargetVersion;
+          qDebug()<<"tmpNewAPPDir"<<tmpNewAPPDir;
+         QFile app_file(tmpNewAPPDir);
+         if (app_file.exists()){
+             //QMessageBox::information(this,"测试","文件存在");
+             qDebug()<<"The new APP file have been download sucesfully!";
+             qDebug()<<"TAppTargetVersion.length()"<<AppTargetVersion.length()<<"AppTargetVersion[0]"<<AppTargetVersion[0];
+             if( (AppTargetVersion.length()==11) && (AppTargetVersion[0]=='D'))
+             {
+                QByteArray copyCommond="copy ";
+                copyCommond.append(AppTargetVersion);
+                copyCommond.append(" 009_busTest_new");
+                system(copyCommond);
+                qDebug()<<"copyCommond"<<copyCommond;
+             }
+         }else
+         {
+             //QMessageBox::critical(this,"测试","文件不存在");
+             qDebug()<<"The new APP file have been download failed!";
+
+         }
+
+
+
         }
+
     }
+    if(0==QString::compare("false",PicIsUpGradeComplete,Qt::CaseInsensitive))
+        {//download last picture
+        //replace the new bmp
+        QByteArray downloadString="curl -m 5 -O http://www.cqfog.com.cn:10000/";
+        downloadString.append(PicupGradeFile);
+        system(downloadString);
+        qDebug()<<"-----downloadString in shell:"<<downloadString;
+        QString tmpNewBMPDir;
+        tmpNewBMPDir="/root/"+PicTargetVersion+".bmp";
+        qDebug()<<"tmpNewBMPDir"<<tmpNewBMPDir;
+        QFile bmp_file(tmpNewBMPDir);
+        if (bmp_file.exists()){
+        //QMessageBox::information(this,"测试","文件存在");
+            qDebug()<<"The new BMP file have been download sucesfully!";
+            qDebug()<<"TAppTargetVersion.length()"<<PicTargetVersion.length()<<"AppTargetVersion[0]"<<PicTargetVersion[0];
+            if( (PicTargetVersion.length()==11) && (PicTargetVersion[0]=='P'))
+                {
+                    QByteArray copyPicCommond="copy ";
+                    copyPicCommond.append(PicTargetVersion);
+                    copyPicCommond.append(".bmp 1063.bmp");
+                    system(copyPicCommond);
+                    qDebug()<<"copyPicCommond"<<copyPicCommond;
+                }
+            }else
+            {
+                //QMessageBox::critical(this,"测试","文件不存在");
+                qDebug()<<"The new APP file have been download failed!";
+
+            }
+       }
+    updateAPP();
+    qDebug()<<"getVersionFromReturn ending";
+}
+
+void GetHttpReturn::updateAPP()
+{//Compaer and copy and set new app
+
+    qDebug()<<"updateAPP begin"<<DeviceSetting::appVersion;
+    system("ls -l");
 
 }
 void  GetHttpReturn::GetUrl(int cmdFlag)
@@ -252,7 +326,7 @@ void  GetHttpReturn::GetUrl(int cmdFlag)
         strUrl= DeviceSetting::serverIP+QString("GCQD");
         break;
     case SERVER_NO_UPDATE:
-        strUrl= DeviceSetting::hostIP+QString("ADDSILOG&status=%1").arg(1-DeviceSetting::serverNoUpdate);
+        strUrl= DeviceSetting::serverIP+QString("UBRSSUS&status=%1").arg(1-DeviceSetting::serverNoUpdate);
         break;
     case GET_VERSION_INFOMATION:
         strUrl= DeviceSetting::hostIP+QString("GUGBDN&stationCode=%1").arg(DeviceSetting::stationCode);

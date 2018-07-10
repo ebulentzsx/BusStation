@@ -347,7 +347,7 @@ void secondFunction::heartBeatToNet()
 {
     post_url.clear();
   //  post_url= SERVER_IP+QString("UBRST&stationCode=%1").arg(DeviceSetting::stationCode);
-    post_url= DeviceSetting::hostIP+QString("UBRST&stationCode=%1").arg(DeviceSetting::stationCode);
+    post_url= DeviceSetting::serverIP+QString("UBRSSDS&stationCode=%1&deviceStatus=2%").arg(DeviceSetting::stationCode).arg(DeviceSetting::errCode);
     qDebug()<<"------------------heartBeatToNet]--->post_url:"<<post_url;
     updateToServer();
 }
@@ -442,9 +442,5 @@ void secondFunction::slot_pubulic_timer()
         wtach_timer->start(600*1000);
         wtach_timer->setSingleShot(true);
         secTimer=0;
-#if GET_ONE_FROM_CQ
-#else
-
-#endif
   //  }
 }

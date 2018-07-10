@@ -58,6 +58,7 @@ public:
     void setPowerOff();
     void heartbeatWhenSleep();
     void getVersionFromReturn();
+    void updateAPP();
     static bool deal_one_finish;
     //void addActionKey();
     QString strInfor;
