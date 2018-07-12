@@ -241,7 +241,7 @@ void GetHttpReturn::getVersionFromReturn()
          qDebug()<<"-----downloadString in shell:"<<downloadString;
          //replace the new app
          QString tmpNewAPPDir;
-         tmpNewAPPDir="/root/"+AppTargetVersion;
+         tmpNewAPPDir="/root/"+AppTargetVersion+".zip";
           qDebug()<<"tmpNewAPPDir"<<tmpNewAPPDir;
          QFile app_file(tmpNewAPPDir);
          if (app_file.exists()){
@@ -250,10 +250,19 @@ void GetHttpReturn::getVersionFromReturn()
              qDebug()<<"TAppTargetVersion.length()"<<AppTargetVersion.length()<<"AppTargetVersion[0]"<<AppTargetVersion[0];
              if( (AppTargetVersion.length()==11) && (AppTargetVersion[0]=='D'))
              {
-                QByteArray copyCommond="copy ";
+                system("cp 009_busTest 009_busTest20180712");
+                QByteArray copyCommond;
+                copyCommond.append("unzip ");
                 copyCommond.append(AppTargetVersion);
-                copyCommond.append(" 009_busTest_new");
+                copyCommond.append(".zip");
                 system(copyCommond);
+
+                copyCommond.clear();
+                copyCommond.append("cp ");
+                copyCommond.append(AppTargetVersion);
+                copyCommond.append(" 009_busTest");
+                system(copyCommond);
+                system("chmod 777 009_busTest");
                 qDebug()<<"copyCommond"<<copyCommond;
              }
          }else
@@ -285,7 +294,7 @@ void GetHttpReturn::getVersionFromReturn()
             qDebug()<<"TAppTargetVersion.length()"<<PicTargetVersion.length()<<"AppTargetVersion[0]"<<PicTargetVersion[0];
             if( (PicTargetVersion.length()==11) && (PicTargetVersion[0]=='P'))
                 {
-                    QByteArray copyPicCommond="copy ";
+                    QByteArray copyPicCommond="cp ";
                     copyPicCommond.append(PicTargetVersion);
                     copyPicCommond.append(".bmp 1063.bmp");
                     system(copyPicCommond);
