@@ -166,6 +166,8 @@ void GetHttpReturn::heartbeatWhenSleep()
 
 void GetHttpReturn::getVersionFromReturn()
 {
+    int appReplaceFlag=0;
+
     qDebug()<<"getVersionFromReturn begin";
     if(strInfor.length()<200)
     {
@@ -243,9 +245,15 @@ void GetHttpReturn::getVersionFromReturn()
          QString tmpNewAPPDir;
          tmpNewAPPDir="/root/"+AppTargetVersion+".zip";
           qDebug()<<"tmpNewAPPDir"<<tmpNewAPPDir;
-         QFile app_file(tmpNewAPPDir);
-         if (app_file.exists()){
+         QFile app_zip_file(tmpNewAPPDir);
+         if (app_zip_file.exists()==true){
              //QMessageBox::information(this,"测试","文件存在");
+             tmpNewAPPDir.clear();
+             tmpNewAPPDir="/root/"+AppTargetVersion;
+             QFile app_file(tmpNewAPPDir);
+             if (app_file.exists()==false)
+             {
+
              qDebug()<<"The new APP file have been download sucesfully!";
              qDebug()<<"TAppTargetVersion.length()"<<AppTargetVersion.length()<<"AppTargetVersion[0]"<<AppTargetVersion[0];
              if( (AppTargetVersion.length()==11) && (AppTargetVersion[0]=='D'))
@@ -260,10 +268,16 @@ void GetHttpReturn::getVersionFromReturn()
                 copyCommond.clear();
                 copyCommond.append("cp ");
                 copyCommond.append(AppTargetVersion);
-                copyCommond.append(" 009_busTest");
+                copyCommond.append(" newAPP");
                 system(copyCommond);
-                system("chmod 777 009_busTest");
+                system("chmod 777 newAPP");
+                system("touch new");
                 qDebug()<<"copyCommond"<<copyCommond;
+                appReplaceFlag=1;
+               // DeviceSetting tmp_Bus;
+               // tmp_Bus.setConfigTxt("appVersion",AppTargetVersion);
+               // tmp_Bus.showDeviceInfo();
+             }
              }
          }else
          {
@@ -278,7 +292,10 @@ void GetHttpReturn::getVersionFromReturn()
 
     }
     if(0==QString::compare("false",PicIsUpGradeComplete,Qt::CaseInsensitive))
-        {//download last picture
+        {
+        if(0!=QString::compare(DeviceSetting::picVersion,PicTargetVersion,Qt::CaseInsensitive))
+        {
+            //download last picture
         //replace the new bmp
         QByteArray downloadString="curl -m 5 -O http://www.cqfog.com.cn:10000/";
         downloadString.append(PicupGradeFile);
@@ -299,6 +316,12 @@ void GetHttpReturn::getVersionFromReturn()
                     copyPicCommond.append(".bmp 1063.bmp");
                     system(copyPicCommond);
                     qDebug()<<"copyPicCommond"<<copyPicCommond;
+
+                    DeviceSetting tmp_Bus;
+                    tmp_Bus.setConfigTxt("picVersion",PicTargetVersion);
+                    tmp_Bus.showDeviceInfo();
+
+
                 }
             }else
             {
@@ -306,9 +329,12 @@ void GetHttpReturn::getVersionFromReturn()
                 qDebug()<<"The new APP file have been download failed!";
 
             }
+        }
        }
     updateAPP();
     qDebug()<<"getVersionFromReturn ending";
+    if(1==appReplaceFlag)
+        system("reboot");
 }
 
 void GetHttpReturn::updateAPP()

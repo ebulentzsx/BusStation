@@ -347,7 +347,7 @@ void secondFunction::heartBeatToNet()
 {
     post_url.clear();
   //  post_url= SERVER_IP+QString("UBRST&stationCode=%1").arg(DeviceSetting::stationCode);
-    post_url= DeviceSetting::serverIP+QString("UBRSSDS&stationCode=%1&deviceStatus=2%").arg(DeviceSetting::stationCode).arg(DeviceSetting::errCode);
+    post_url= DeviceSetting::serverIP+QString("UBRSSDS&stationCode=%1&deviceStatus=%2").arg(DeviceSetting::stationCode).arg(DeviceSetting::errCode);
     qDebug()<<"------------------heartBeatToNet]--->post_url:"<<post_url;
     updateToServer();
 }

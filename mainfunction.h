@@ -29,7 +29,7 @@ public:
     void feedWtachDog();
     void firstHeartBeat();
     void getVersionInfo();
-    void getNewVersion();
+    void checkNewVersion();
 
 signals:
     void signal_sendRequest(const QString& strUrl);

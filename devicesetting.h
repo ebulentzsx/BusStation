@@ -5,6 +5,7 @@
 #include <QVector>
 #include <QList>
 #include <QFile>
+#include <QStringList>
 #include "pubulicDefine.h"
 class DeviceSetting
 {
@@ -12,7 +13,6 @@ public:
     DeviceSetting();
     static QString deviceID;
     //static QString busFd;
-    static QString programVID;
     static QString serverIP;
     static QString usbSet;
     static QString stationCode;
@@ -25,6 +25,8 @@ public:
     static int com_error_Reboot;
     static int serverNoUpdate;
     static int errCode;
+    static int updateBegin;
+
 
 
     static QList<QString> actionKey;
@@ -34,6 +36,7 @@ public:
     void addActionKey();
     void initDevice();
     void intAppVersion(QString tmpVersion);
+    void setConfigTxt(QString keyString,QString inputString);
 };
 
 #endif // DEVICESETTING_H

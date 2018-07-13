@@ -63,9 +63,6 @@ public:
     //void addActionKey();
     QString strInfor;
     QString strUrl;
-    //QString deviceID;
-    //QString busFd;
-    //QString programVID;
 signals:
     void signal_writeCom(QByteArray strResult);
     void signal_startTimer();

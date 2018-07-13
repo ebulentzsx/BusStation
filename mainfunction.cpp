@@ -44,8 +44,14 @@ void MainFunction::setSys_time()
          return;
      }
      //-----------------20180710 Debug test
-    getVersionInfo();
-    return;
+     if(DeviceSetting::updateBegin==1)
+     {
+            feedWtachDog();
+            getVersionInfo();
+            DeviceSetting::updateBegin=0;
+            timer->start(50000);
+            return;
+     }
     //----------------20180710 Debug test
      if(checkTime()==false)
      {
@@ -123,7 +129,9 @@ void MainFunction::beginLoop()
 
     setSys_time();
     //sleep(3);
-    //firstHeartBeat();
+    //
+    checkNewVersion();
+    firstHeartBeat();
     timer->start(REQUEST_INTERVERL);
     timer->setSingleShot( true );
 
@@ -307,10 +315,21 @@ bool MainFunction::checkTime()
     QString strTime = time.toString("h");
 
     int intTime=strTime.toInt();
+
     qDebug()<<"Current time ------------------------------:::::::"<<strTime<<"-----int"<<intTime;
     if(intTime==23 || intTime<5)
+    {
+       if(intTime==23 ){
+            QString strMinute=time.toString("m");
+            int intMinute=strMinute.toInt();
+            if(intMinute==11)
+                DeviceSetting::updateBegin=1;
+        }
+       else
+           DeviceSetting::updateBegin=0;
        return false;
        // return true;
+    }
     else
         return true;
 
@@ -329,7 +348,7 @@ void MainFunction::firstHeartBeat()
 {
      QString heartBeatUrl;
      newInfo->p_cmdFlag=-1;
-     heartBeatUrl= DeviceSetting::serverIP+QString("UBRSSDS&stationCode=%1&deviceStatus=2%").arg(DeviceSetting::stationCode).arg(DeviceSetting::errCode);
+     heartBeatUrl= DeviceSetting::serverIP+QString("UBRSSDS&stationCode=%1&deviceStatus=%2").arg(DeviceSetting::stationCode).arg(DeviceSetting::errCode);
      pHttpFun=new HttpFun();
      QObject::connect(pHttpFun,SIGNAL(signal_requestFinished(bool,QString)),newInfo,SLOT(slot_requestFinished(bool,QString)));
      pHttpFun->sendRequest(heartBeatUrl);
@@ -339,6 +358,7 @@ void MainFunction::firstHeartBeat()
 void MainFunction::getVersionInfo()
 {
 //http://123.207.239.144:10000/YiYangIndex.ashx?ActionKey=GUGBDN&stationCode=G0473
+
     newInfo->GetUrl(GET_VERSION_INFOMATION);
     pHttpFun=new HttpFun();
     QObject::connect(pHttpFun,SIGNAL(signal_requestFinished(bool,QString)),newInfo,SLOT(slot_requestFinished(bool,QString)));
@@ -346,10 +366,24 @@ void MainFunction::getVersionInfo()
 
 }
 
-void MainFunction::getNewVersion()
+void MainFunction::checkNewVersion()
 {
+    QFile flag_file("/root/new");
+    if(flag_file.exists()==true)
+    {
+        //means current running is the new APP
+        system("rm new");
+        system("rm 009_busTest");
+        system("cp newAPP 009_busTest");
+        //need report to server
+        DeviceSetting tmp_Bus;
+        tmp_Bus.setConfigTxt("appVersion",DeviceSetting::appVersion);
+        tmp_Bus.showDeviceInfo();
+        system("reboot");
 
+    }
 }
+
 
 
 

@@ -1,7 +1,6 @@
 #include "devicesetting.h"
 QString DeviceSetting::deviceID=NULL;
 QString DeviceSetting::stationCode=NULL;
-QString DeviceSetting::programVID=NULL;
 QString DeviceSetting::usbSet=NULL;
 QString DeviceSetting::serverIP=NULL;
 QString DeviceSetting::hostIP=NULL;
@@ -13,6 +12,7 @@ int DeviceSetting::error_Reboot=0;
 int DeviceSetting::com_error_Reboot=0;
 int DeviceSetting::serverNoUpdate =0;
 int DeviceSetting::errCode=1;
+int DeviceSetting::updateBegin=0;
 QList<QString>  DeviceSetting::actionKey;
 DeviceSetting::DeviceSetting()
 {
@@ -23,10 +23,12 @@ DeviceSetting::DeviceSetting()
 void DeviceSetting::showDeviceInfo()
 {
     qDebug()<<"Device ID:"<<DeviceSetting::deviceID;
-    qDebug()<<"Program version:"<<DeviceSetting::programVID;
+    qDebug()<<"Program version:"<<DeviceSetting::appVersion;
     qDebug()<<"Server IP:"<<DeviceSetting::serverIP;
+    qDebug()<<"hostIP:"<<DeviceSetting::hostIP;
     qDebug()<<"USB setting:"<<DeviceSetting::usbSet;
      qDebug()<<"stationCode:"<<DeviceSetting::stationCode;
+     qDebug()<<"picVersion:"<<DeviceSetting::picVersion;
     foreach (QString x,DeviceSetting::actionKey) {
         qDebug()<<x;
     }
@@ -55,8 +57,8 @@ void DeviceSetting::SetDevicePosition()
                     DeviceSetting::deviceID=str.mid(i+3).simplified();
                 if((i=str.indexOf("stationCode"))>-1)
                     DeviceSetting::stationCode=str.mid(i+12).simplified();
-                if((i=str.indexOf("version"))>-1)
-                    DeviceSetting::programVID=str.mid(i+8).simplified();
+                //if((i=str.indexOf("version"))>-1)
+                    //DeviceSetting::appVersion=str.mid(i+8).simplified();
                 if((i=str.indexOf("usb"))>-1)
                     DeviceSetting::usbSet=str.mid(i+4).simplified();
                 if((i=str.indexOf("serverIP"))>-1)
@@ -69,7 +71,7 @@ void DeviceSetting::SetDevicePosition()
             }
             //qDebug()<<"Debug:Local device ID is"<<DeviceSetting::deviceID;
             //qDebug()<<"Debug:Local bus forword is"<<DeviceSetting::busFd;
-            //qDebug()<<"Debug:Local program version is"<<DeviceSetting::programVID;
+            //qDebug()<<"Debug:Local program version is"<<DeviceSetting::appVersion;
             fileID.flush();
             fileID.close();
             if(DeviceSetting::stationCode.length()<3)
@@ -139,3 +141,44 @@ void DeviceSetting::intAppVersion(QString tmpVersion)
 {
     DeviceSetting::appVersion=tmpVersion;
 }
+
+void DeviceSetting::setConfigTxt(QString keyString, QString inputString)
+{
+    qDebug()<<"DeviceSetting::setConfigTxt";
+     QString strAll;
+     QStringList strList;
+     QFile readFile(ID_FILE_PATH);
+     if(readFile.open((QIODevice::ReadOnly|QIODevice::Text)))
+     {
+         QTextStream stream(&readFile);
+         strAll=stream.readAll();
+     }
+     readFile.close();
+     QFile writeFile(ID_FILE_PATH);
+     if(writeFile.open(QIODevice::WriteOnly|QIODevice::Text))
+     {
+             QTextStream stream(&writeFile);
+             strList=strAll.split("\n");
+             for(int i=0;i<strList.count();i++)
+             {
+
+
+                 if(strList.at(i).contains(keyString))
+                 {//appVersion
+                     QString tempStr=strList.at(i);
+                     tempStr.replace(11,22,inputString);
+                     stream<<tempStr<<'\n';
+                 }
+
+                 else
+                 {
+                     stream<<strList.at(i)<<'\n';
+                 }
+             }
+     }
+     writeFile.flush();
+     writeFile.close();
+
+}
+
+
