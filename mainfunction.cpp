@@ -368,20 +368,30 @@ void MainFunction::getVersionInfo()
 
 void MainFunction::checkNewVersion()
 {
-    QFile flag_file("/root/new");
+    QFile flag_file("/root/newAPP");
     if(flag_file.exists()==true)
     {
         //means current running is the new APP
-        system("rm new");
+        //system("rm new");
         system("rm 009_busTest");
         system("cp newAPP 009_busTest");
         //need report to server
         DeviceSetting tmp_Bus;
         tmp_Bus.setConfigTxt("appVersion",DeviceSetting::appVersion);
         tmp_Bus.showDeviceInfo();
+        reportNewVersionToServer();
         system("reboot");
 
     }
+}
+
+void MainFunction::reportNewVersionToServer()
+{
+    newInfo->GetUrl(REPORT_VERSION_TO_SERVER);
+    pHttpFun=new HttpFun();
+    QObject::connect(pHttpFun,SIGNAL(signal_requestFinished(bool,QString)),newInfo,SLOT(slot_requestFinished(bool,QString)));
+    pHttpFun->sendRequest(newInfo->strUrl);
+
 }
 
 

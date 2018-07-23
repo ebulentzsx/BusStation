@@ -30,6 +30,7 @@ public:
     void firstHeartBeat();
     void getVersionInfo();
     void checkNewVersion();
+    void reportNewVersionToServer();
 
 signals:
     void signal_sendRequest(const QString& strUrl);

@@ -178,11 +178,6 @@ void myCOM::slot_send_COM(QByteArray buf)
     {
         DeviceSetting::com_error_Reboot++;
         qDebug()<<"myCOM------------------------------------------------------------------------------------------------------------------------------------No display";
-        if(DeviceSetting::com_error_Reboot>5)
-        {
-            qDebug()<<"------------Write COM Failed!!";
-         //   QProcess::execute("reboot");
-        }
     }
     else
     {
@@ -203,10 +198,11 @@ void myCOM::slot_re_open_COM(bool com_state)
    closeCOM();
    openCOM();
    DeviceSetting::error_Reboot++;
-   if(DeviceSetting::error_Reboot>3)
+   if(DeviceSetting::error_Reboot>5)
    {
-        QProcess::execute("reboot");
-        qDebug() <<"my_com error";
+       qDebug() <<"my_com error";
+       QProcess::execute("reboot");
+
     }
 }
 
@@ -214,8 +210,6 @@ void myCOM::slot_init()
 {
     setCOM();
     openCOM();
-
-    //recvCOM();
     qDebug() << QString("slot in myCOM thread id:slot_init") << QThread::currentThreadId();
 }
 

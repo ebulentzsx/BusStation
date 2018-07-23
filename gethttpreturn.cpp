@@ -43,6 +43,7 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
         default:
             break;
         }
+        emit signal_startTimer();
 
     }
     else
@@ -58,7 +59,6 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
                 qDebug()<<"rm errFile Get TIME!!! from server Failed!!";
                 sleep(2);
                 setPowerOff();
-
                 //powe off and reboot
             }
             else
@@ -75,6 +75,7 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
             init_flag=true;
             qDebug()<<"Get bus informatioan from server Failed!!";
             DeviceSetting::error_Reboot++;
+            qDebug()<<"DeviceSetting::error_Reboot"<<DeviceSetting::error_Reboot;
             sleep(DeviceSetting::error_Reboot);
             if(DeviceSetting::error_Reboot>4)
             {
@@ -82,17 +83,20 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
                 qDebug()<<"Get from server Failed!!";
                 QProcess::execute("reboot");
             }
+            emit signal_startTimer();
             return;
         }
         if(p_cmdFlag==GET_VERSION_INFOMATION)
         {
             //determine whether need update
             qDebug()<<"getVersionFromReturn()";
+            emit signal_startTimer();
             return;
         }
+        emit signal_startTimer();
 
     }
-     emit signal_startTimer();
+
 
 }
 void GetHttpReturn::SetSysTime()
@@ -256,7 +260,7 @@ void GetHttpReturn::getVersionFromReturn()
 
              qDebug()<<"The new APP file have been download sucesfully!";
              qDebug()<<"TAppTargetVersion.length()"<<AppTargetVersion.length()<<"AppTargetVersion[0]"<<AppTargetVersion[0];
-             if( (AppTargetVersion.length()==11) && (AppTargetVersion[0]=='D'))
+             if( (AppTargetVersion.length()==11) && (AppTargetVersion[0]=='A'))
              {
                 system("cp 009_busTest 009_busTest20180712");
                 QByteArray copyCommond;
@@ -365,6 +369,9 @@ void  GetHttpReturn::GetUrl(int cmdFlag)
         break;
     case GET_VERSION_INFOMATION:
         strUrl= DeviceSetting::hostIP+QString("GUGBDN&stationCode=%1").arg(DeviceSetting::stationCode);
+        break;
+    case REPORT_VERSION_TO_SERVER:
+        strUrl= DeviceSetting::hostIP+QString("UUGBDN&stationCode=%1&upGradeType=0").arg(DeviceSetting::stationCode);
         break;
     default:
         break;
