@@ -24,13 +24,14 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
         strInfor=strResult;
         switch (p_cmdFlag) {
         case GET_BUS_IFOR:
+             qDebug()<<"Get CQ from server Success!!---GET_BUS_IFOR";
             GetLines();
 
             break;
         case GET_SYS_TIME:
             SetSysTime();
             initAll1096();
-
+            qDebug()<<"Get system time from server Success!!";
             break;
         case GET_ONE_FROM_CQ:
              qDebug()<<"Get CQ from server Success!!";
@@ -80,8 +81,8 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
             if(DeviceSetting::error_Reboot>4)
             {
                 initAll1096();
-                qDebug()<<"Get from server Failed!!";
-                QProcess::execute("reboot");
+                qDebug()<<"Get from server Failed!!DeviceSetting::error_Reboot>4";
+                system("reboot");
             }
             emit signal_startTimer();
             return;
@@ -270,12 +271,13 @@ void GetHttpReturn::getVersionFromReturn()
                 system(copyCommond);
 
                 copyCommond.clear();
-                copyCommond.append("cp ");
+                copyCommond.append("mv ");
                 copyCommond.append(AppTargetVersion);
                 copyCommond.append(" newAPP");
                 system(copyCommond);
                 system("chmod 777 newAPP");
                 system("touch new");
+                system("rm A*.zip");
                 qDebug()<<"copyCommond"<<copyCommond;
                 appReplaceFlag=1;
                // DeviceSetting tmp_Bus;
@@ -735,7 +737,7 @@ void GetHttpReturn::showAll_1096()
         if((x==0))
         {
 
-                if(i%18<reDisplay)
+                if(i%18<reDisplay || tempList.at(i).LSC==1)
                 {
                     refresh_buf[12+(lineList.at(i).id-1)*49]=disNum^0x80;
                     dealOneLine(lineList.at(i),13+(lineList.at(i).id-1)*49);
@@ -991,15 +993,23 @@ void GetHttpReturn::dealOneLine(BusLine newBus,int position)
     if(newBus.LSC>0)
     {
        //newBus.LSC=newBus.LSC+9;
-        if(newBus.LSC<10)
-            info.append(" ");
 
+
+        if(newBus.CD.length()==8)
+        {
+            info.append(newBus.CD);
+        }
+        else
+        {
+        if(newBus.LSC<10)
+                info.append(" ");
         info.append(QString::number(newBus.LSC,10));
        // qDebug()<<"----------------newBus.LSC:"<<newBus.LSC<<"---INFO:"<<info;
         //QString::number();
         info.append(0xd5);
         info.append(0xbe);
         info.append(" ");
+        }
     }
     else
     {

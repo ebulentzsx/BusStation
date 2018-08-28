@@ -93,7 +93,7 @@ void DeviceSetting::SetDevicePosition()
             if(DeviceSetting::hostIP.length()<10)
             {
                 qDebug()<<"host  IP is NULL !!!";
-                DeviceSetting::hostIP="http://http://123.207.239.144:10001/YiYangIndex.ashx?ActionKey=";
+                DeviceSetting::hostIP="http://123.207.239.144:10001/YiYangIndex.ashx?ActionKey=";
                 //sleep(1000);
             }
             else

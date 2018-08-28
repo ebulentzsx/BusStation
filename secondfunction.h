@@ -23,7 +23,7 @@ public:
     void heartBeatToNet();
     static int delaySeconds;
     static int maxDelaySeconds;
-    int secTimer;
+
     int countTimer;
     QString post_url;
     //QByteArray tmp_HardwareInfo;

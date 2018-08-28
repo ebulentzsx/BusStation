@@ -22,8 +22,6 @@ public:
     void setSys_time();
     void beginLoop();
     void run();
-    void showTitle();
-    void showNULL();
     bool checkTime();
     void initWatchDog();
     void feedWtachDog();
