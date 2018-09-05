@@ -108,7 +108,10 @@ void MainFunction::slot_writeCom(QByteArray tmp)
 
 void MainFunction::slot_startTimer()
 {
+
     timer->start(REQUEST_INTERVERL);
+
+
     qDebug()<<"QTime starting~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
 }
 

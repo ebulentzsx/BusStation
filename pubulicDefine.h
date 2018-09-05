@@ -11,7 +11,7 @@
 #define SERVER_NO_UPDATE 4
 //#define SERVER_IP "http://123.207.75.109:10000/YiYangIndex.ashx?ActionKey="
 //#define HEARTBEAT_IP "http://123.207.75.109:10000/YiYangIndex.ashx?ActionKey=UBRST&stationCode="
-#define REQUEST_INTERVERL 4500
+#define REQUEST_INTERVERL 5500
 #define SECOND_FUNCTION_INTERVAL 600
 #define WAIT_COM_RETURN_TIME 30
 #define DEBUT_WITHOUT_COM 0

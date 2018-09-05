@@ -76,6 +76,7 @@ void GetHttpReturn::slot_requestFinished(bool bSuccess, const QString &strResult
             init_flag=true;
             qDebug()<<"Get bus informatioan from server Failed!!";
             DeviceSetting::error_Reboot++;
+            system("echo 0 >/dev/watchdog");
             qDebug()<<"DeviceSetting::error_Reboot"<<DeviceSetting::error_Reboot;
             sleep(DeviceSetting::error_Reboot);
             if(DeviceSetting::error_Reboot>4)

@@ -2,7 +2,7 @@
 #include <QTextCodec>
 #include <qdebug.h>
 #define HTTPS 0
-const int nHTTP_TIME = 5000; //10秒
+const int nHTTP_TIME = 8000; //10秒
 
 HttpFun::HttpFun(QObject *parent) :
     QObject(parent)
