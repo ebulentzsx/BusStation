@@ -149,13 +149,17 @@ bool MainFunction::checkTime()
     QString strTime = time.toString("h");
 
     int intTime=strTime.toInt();
-
+    QString strMinute=time.toString("m");
+    int intMinute=strMinute.toInt();
+    if(intTime==intMinute)
+    {
+        system("/root/1063 2 1063.bmp&");
+    }
     qDebug()<<"Current time ------------------------------:::::::"<<strTime<<"-----int"<<intTime;
     if(intTime==23 || intTime<5)
     {
         if(intTime==23 ){
-            QString strMinute=time.toString("m");
-            int intMinute=strMinute.toInt();
+
             if(intMinute==11)
                 DeviceSetting::updateBegin=1;
         }

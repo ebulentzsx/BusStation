@@ -333,7 +333,7 @@ void GetHttpReturn::getVersionFromReturn()
             }else
             {
                 //QMessageBox::critical(this,"测试","文件不存在");
-                qDebug()<<"The new APP file have been download failed!";
+                qDebug()<<"The new PICTURE file have been download failed!";
 
             }
         }
