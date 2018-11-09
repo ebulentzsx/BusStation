@@ -386,7 +386,7 @@ void  GetHttpReturn::GetLines()
 {
 #if DEBUG_GET_ONE_STATION_FROM_CQ
     qDebug()<<"GetLines begin";
-    if(strInfor.length()<200)
+    if(strInfor.length()<130)
     {
         qDebug()<<"GetLines error!!";
         return;
@@ -976,18 +976,14 @@ void GetHttpReturn::dealOneLine(BusLine newBus,int position)
         info.append(newBus.ESN);
         info.append(" ");
     }
-    else  if(newBus.ESN.length()<17)
+    else  if(newBus.ESN.length()>14)
     {
         info.append(" ");
+        newBus.ESN=newBus.ESN.left(14);
         info.append(newBus.ESN);
-        //info.append(" ");
-    }
-    else if(newBus.ESN.length()<19)
-    {
         info.append(" ");
-        newBus.ESN=newBus.ESN.left(16);
-        info.append(newBus.ESN);
     }
+
    // info.append(" ");//zhong dian zhan
 #endif
 #if  DEBUG_SHOW_0_ZHAN
@@ -1014,9 +1010,15 @@ void GetHttpReturn::dealOneLine(BusLine newBus,int position)
     }
     else
     {
-        if(newBus.VNO.length()==6)
+        if(newBus.VNO.length()==6||newBus.CD.length()==1)
         {
-            info.append(newBus.VNO);
+            //info.append(newBus.VNO);
+            info.append(0xb4);
+            info.append(0xfd);
+            info.append(0xb7);
+            info.append(0xa2);
+            info.append(0xb3);
+            info.append(0xb5);
            //  qDebug()<<"----------------newBus.VNO.toHex:"<<newBus.LSC;
              //B4FD`
             info.append(" ");

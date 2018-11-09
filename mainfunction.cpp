@@ -167,7 +167,7 @@ bool MainFunction::checkTime()
             DeviceSetting::updateBegin=0;
         //keep update
         return false;
-        // return true;
+         //return true;
     }
     else
         return true;
