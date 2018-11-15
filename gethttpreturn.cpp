@@ -734,11 +734,16 @@ void GetHttpReturn::showAll_1096()
         x=QString::compare(tempList.at(i).CD,lineList.at(i).CD);
 #else
         x=tempList.at(i).LSC-lineList.at(i).LSC;
+        int y=0;
+        //y=tempList.at(i).VNO.length()-lineList.at(i).VNO.length();
+        y=QString::compare(tempList.at(i).VNO,lineList.at(i).VNO);
+        int z=0;
+        z=QString::compare(tempList.at(i).CD,lineList.at(i).CD);
 #endif
         if((x==0))
         {
 
-                if(i%18<reDisplay || tempList.at(i).LSC==1)
+                if(i%18<reDisplay || z!=0 || y!=0)
                 {
                     refresh_buf[12+(lineList.at(i).id-1)*49]=disNum^0x80;
                     dealOneLine(lineList.at(i),13+(lineList.at(i).id-1)*49);
@@ -992,12 +997,7 @@ void GetHttpReturn::dealOneLine(BusLine newBus,int position)
        //newBus.LSC=newBus.LSC+9;
 
 
-        if(newBus.CD.length()==8)
-        {
-            info.append(newBus.CD);
-        }
-        else
-        {
+
         if(newBus.LSC<10)
                 info.append(" ");
         info.append(QString::number(newBus.LSC,10));
@@ -1006,19 +1006,19 @@ void GetHttpReturn::dealOneLine(BusLine newBus,int position)
         info.append(0xd5);
         info.append(0xbe);
         info.append(" ");
-        }
+
     }
     else
     {
         if(newBus.VNO.length()==6||newBus.CD.length()==1)
         {
-            //info.append(newBus.VNO);
-            info.append(0xb4);
-            info.append(0xfd);
-            info.append(0xb7);
-            info.append(0xa2);
-            info.append(0xb3);
-            info.append(0xb5);
+            info.append(newBus.VNO);
+            //info.append(0xb4);
+            //info.append(0xfd);
+            //info.append(0xb7);
+            //info.append(0xa2);
+            //info.append(0xb3);
+            //info.append(0xb5);
            //  qDebug()<<"----------------newBus.VNO.toHex:"<<newBus.LSC;
              //B4FD`
             info.append(" ");

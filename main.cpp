@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     //QProcess::execute("pppd call wcdma&");
 #if    DEBUG_RUN_DESKTOP
 #else
-    qDebug() <<"<*-------------------------------------------20181102  1004-------------------------------------------*>";
+    qDebug() <<"<*-------------------------------------------20181115  1644-------------------------------------------*>";
     sleep(3);
     system("pppd call wcdma&");
     system("/root/1063 2 1063.bmp&");
@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 
     DeviceSetting my_Bus;
     my_Bus.initDevice();
-    my_Bus.intAppVersion("A2018110201");
+    my_Bus.intAppVersion("A2018111501");
     qDebug() <<"----Current appVersion"<<DeviceSetting::appVersion;
     myCOM *my_com;
     my_com=new myCOM();
