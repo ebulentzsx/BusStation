@@ -124,11 +124,11 @@ void secondFunction::postAll(QByteArray tmp_HardwareInfo)
     ControlLcdStatus=tmp_HardwareInfo[187]-0x33;
     ControlConnectStatus=tmp_HardwareInfo[185]-0x33;
 
-    QdBtnBatteryVoltage.append(tmp_HardwareInfo[71]-0x33);
-    QdBtnBatteryVoltage.append(tmp_HardwareInfo[72]-0x33);
+    QdBtnBatteryVoltage.append(tmp_HardwareInfo[76]-0x33);
+    QdBtnBatteryVoltage.append(tmp_HardwareInfo[77]-0x33);
     QdBtnBatteryVoltage.append('.');
-    QdBtnBatteryVoltage.append(tmp_HardwareInfo[73]-0x33);
-    QdBtnBatteryVoltage.append(tmp_HardwareInfo[74]-0x33);
+    QdBtnBatteryVoltage.append(tmp_HardwareInfo[78]-0x33);
+    QdBtnBatteryVoltage.append(tmp_HardwareInfo[79]-0x33);
 
     ControlVoltage.append(tmp_HardwareInfo[46]-0x33);
     ControlVoltage.append(tmp_HardwareInfo[47]-0x33);
@@ -197,47 +197,48 @@ void secondFunction::postAll(QByteArray tmp_HardwareInfo)
     BoxUpDoorStatus=tmp_HardwareInfo[191]-0x33;
     BoxDownDoorStatus=tmp_HardwareInfo[192]-0x33;
 
-    BoxInnerTemp.append(tmp_HardwareInfo[146]-0x33);
-    BoxInnerTemp.append(tmp_HardwareInfo[147]-0x33);
-    BoxInnerTemp.append(tmp_HardwareInfo[148]-0x33);
+    BoxInnerTemp.append(tmp_HardwareInfo[187]-0x33);
+    BoxInnerTemp.append(tmp_HardwareInfo[188]-0x33);
+    BoxInnerTemp.append(tmp_HardwareInfo[189]-0x33);
     BoxInnerTemp.append('.');
-    BoxInnerTemp.append(tmp_HardwareInfo[149]-0x33);
-    BoxInnerTemp.append(tmp_HardwareInfo[150]-0x33);
+    BoxInnerTemp.append(tmp_HardwareInfo[190]-0x33);
+    BoxInnerTemp.append(tmp_HardwareInfo[191]-0x33);
 
-    BoxInnerHumidity.append(tmp_HardwareInfo[151]-0x33);
-    BoxInnerHumidity.append(tmp_HardwareInfo[152]-0x33);
+    BoxInnerHumidity.append(tmp_HardwareInfo[192]-0x33);
+    BoxInnerHumidity.append(tmp_HardwareInfo[193]-0x33);
     BoxInnerHumidity.append('.');
-    BoxInnerHumidity.append(tmp_HardwareInfo[153]-0x33);
-    BoxInnerHumidity.append(tmp_HardwareInfo[154]-0x33);
+    BoxInnerHumidity.append(tmp_HardwareInfo[194]-0x33);
+    BoxInnerHumidity.append(tmp_HardwareInfo[195]-0x33);
 
-    BoxShockCount.append(tmp_HardwareInfo[155]-0x33);
-    BoxShockCount.append(tmp_HardwareInfo[156]-0x33);
-    BoxShockCount.append(tmp_HardwareInfo[157]-0x33);
-    BoxShockCount.append(tmp_HardwareInfo[158]-0x33);
-    BoxShockCount.append(tmp_HardwareInfo[159]-0x33);
-    BoxShockCount.append(tmp_HardwareInfo[160]-0x33);
+    BoxShockCount.append(tmp_HardwareInfo[196]-0x33);
+    BoxShockCount.append(tmp_HardwareInfo[197]-0x33);
+    BoxShockCount.append(tmp_HardwareInfo[198]-0x33);
+    BoxShockCount.append(tmp_HardwareInfo[199]-0x33);
+    BoxShockCount.append(tmp_HardwareInfo[200]-0x33);
+    BoxShockCount.append(tmp_HardwareInfo[201]-0x33);
 
-    BoxHornCount.append(tmp_HardwareInfo[161]-0x33);
-    BoxHornCount.append(tmp_HardwareInfo[162]-0x33);
-    BoxHornCount.append(tmp_HardwareInfo[163]-0x33);
-    BoxHornCount.append(tmp_HardwareInfo[164]-0x33);
-    BoxHornCount.append(tmp_HardwareInfo[165]-0x33);
-    BoxHornCount.append(tmp_HardwareInfo[166]-0x33);
+    BoxHornCount.append(tmp_HardwareInfo[202]-0x33);
+    BoxHornCount.append(tmp_HardwareInfo[203]-0x33);
+    BoxHornCount.append(tmp_HardwareInfo[204]-0x33);
+    BoxHornCount.append(tmp_HardwareInfo[205]-0x33);
+    BoxHornCount.append(tmp_HardwareInfo[206]-0x33);
+    BoxHornCount.append(tmp_HardwareInfo[207]-0x33);
 
-    BoxUpDoorOpenCount.append(tmp_HardwareInfo[167]-0x33);
-    BoxUpDoorOpenCount.append(tmp_HardwareInfo[168]-0x33);
-    BoxUpDoorOpenCount.append(tmp_HardwareInfo[169]-0x33);
-    BoxUpDoorOpenCount.append(tmp_HardwareInfo[170]-0x33);
-    BoxUpDoorOpenCount.append(tmp_HardwareInfo[171]-0x33);
-    BoxUpDoorOpenCount.append(tmp_HardwareInfo[172]-0x33);
+    BoxUpDoorOpenCount.append(tmp_HardwareInfo[208]-0x33);
+    BoxUpDoorOpenCount.append(tmp_HardwareInfo[209]-0x33);
+    BoxUpDoorOpenCount.append(tmp_HardwareInfo[210]-0x33);
+    BoxUpDoorOpenCount.append(tmp_HardwareInfo[211]-0x33);
+    BoxUpDoorOpenCount.append(tmp_HardwareInfo[212]-0x33);
+    BoxUpDoorOpenCount.append(tmp_HardwareInfo[213]-0x33);
 
-
+/*  delete
     BoxDownDoorOpenCount.append(tmp_HardwareInfo[173]-0x33);
     BoxDownDoorOpenCount.append(tmp_HardwareInfo[174]-0x33);
     BoxDownDoorOpenCount.append(tmp_HardwareInfo[175]-0x33);
     BoxDownDoorOpenCount.append(tmp_HardwareInfo[176]-0x33);
     BoxDownDoorOpenCount.append(tmp_HardwareInfo[177]-0x33);
     BoxDownDoorOpenCount.append(tmp_HardwareInfo[178]-0x33);
+ */
 
 
     /*-------------------------------------005
@@ -260,6 +261,20 @@ void secondFunction::postAll(QByteArray tmp_HardwareInfo)
     SolarEnergyOutputCurrent.append('.');
     SolarEnergyOutputCurrent.append(tmp_HardwareInfo[19]-0x33);
     SolarEnergyOutputCurrent.append(tmp_HardwareInfo[20]-0x33);
+
+    /*
+     */
+    QByteArray AmmeterValue;
+    AmmeterValue.append(tmp_HardwareInfo[81]-0x33);
+    AmmeterValue.append(tmp_HardwareInfo[82]-0x33);
+    AmmeterValue.append(tmp_HardwareInfo[83]-0x33);
+    AmmeterValue.append(tmp_HardwareInfo[84]-0x33);
+    AmmeterValue.append(tmp_HardwareInfo[85]-0x33);
+    AmmeterValue.append(tmp_HardwareInfo[86]-0x33);
+    AmmeterValue.append('.');
+    AmmeterValue.append(tmp_HardwareInfo[87]-0x33);
+    AmmeterValue.append(tmp_HardwareInfo[88]-0x33);
+
 
     //-----Gtt url-----
     post_url.clear();
@@ -298,7 +313,7 @@ void secondFunction::postAll(QByteArray tmp_HardwareInfo)
     if(SolarEnergyStatus==0x00)
         SolarEnergyStatus=0x30;
     //&BusStationCode=Z576-1 &BatteryStatus=1&BatteryOutputVoltage=10&BatteryOutputCurrent=5.0&BatteryTheoreticalStock=10&BatteryTemperature=18&BatterySolarChargeStatus=1&BatteryCityChargeStatus=0&LiBattteryVoltageStatus=0&QdBtnBatteryVoltageStatus=1&QdBtnBatteryVoltage=110&ControlVoltage=220&ControlElectricCurrent=10&ControlPowerStatus=1&ControlLcdStatus=1&ControlConnectStatus=1&LedStatus=1&LedPowerStatus=0&BodyRedStatus=1&PhotosensitiveCtrlStatus=0&LedSupplyVoltage=220&LedVoltage=0.5&LedCurrent=0.6&BoxInnerTemp=18&BoxInnerHumidity=19&BoxShockStatus=1&BoxShockCount=123&BoxHornStatus=1&BoxHornCount=180&BoxUpDoorStatus=0&BoxUpDoorOpenCount=333&BoxDownDoorStatus=1&BoxDownDoorOpenCount=334&SolarEnergyStatus=1&SolarEnergyOutputVoltage=18.5&SolarEnergyOutputCurrent=16.9
-    post_url= DeviceSetting::hostIP+QString("%1&BusStationCode=%2&BatteryStatus=%3&BatteryOutputVoltage=%4&BatteryOutputCurrent=%5&BatteryTheoreticalStock=%6&BatteryTemperature=%7&BatterySolarChargeStatus=%8&BatteryCityChargeStatus=%9&LiBattteryVoltageStatus=%10&QdBtnBatteryVoltageStatus=%11&QdBtnBatteryVoltage=%12&ControlVoltage=%13&ControlElectricCurrent=%14&ControlPowerStatus=%15&ControlLcdStatus=%16&ControlConnectStatus=%17&LedStatus=%18&LedPowerStatus=%19&BodyRedStatus=%20&PhotosensitiveCtrlStatus=%21&LedSupplyVoltage=%22&LedVoltage=%23&LedCurrent=%24&BoxInnerTemp=%25&BoxInnerHumidity=%26&BoxShockStatus=%27&BoxShockCount=%28&BoxHornStatus=%29&BoxHornCount=%30&BoxUpDoorStatus=%31&BoxUpDoorOpenCount=%32&BoxDownDoorStatus=%33&BoxDownDoorOpenCount=%34&SolarEnergyStatus=%35&SolarEnergyOutputVoltage=%36&SolarEnergyOutputCurrent=%37")
+    post_url= DeviceSetting::hostIP+QString("%1&BusStationCode=%2&BatteryStatus=%3&BatteryOutputVoltage=%4&BatteryOutputCurrent=%5&BatteryTheoreticalStock=%6&BatteryTemperature=%7&BatterySolarChargeStatus=%8&BatteryCityChargeStatus=%9&LiBattteryVoltageStatus=%10&QdBtnBatteryVoltageStatus=%11&QdBtnBatteryVoltage=%12&ControlVoltage=%13&ControlElectricCurrent=%14&ControlPowerStatus=%15&ControlLcdStatus=%16&ControlConnectStatus=%17&LedStatus=%18&LedPowerStatus=%19&BodyRedStatus=%20&PhotosensitiveCtrlStatus=%21&LedSupplyVoltage=%22&LedVoltage=%23&LedCurrent=%24&BoxInnerTemp=%25&BoxInnerHumidity=%26&BoxShockStatus=%27&BoxShockCount=%28&BoxHornStatus=%29&BoxHornCount=%30&BoxUpDoorStatus=%31&BoxUpDoorOpenCount=%32&BoxDownDoorStatus=%33&BoxDownDoorOpenCount=%34&SolarEnergyStatus=%35&SolarEnergyOutputVoltage=%36&SolarEnergyOutputCurrent=%37&AmmeterValue=%38")
             .arg(DeviceSetting::actionKey.at(5))
             .arg(DeviceSetting::stationCode)
             .arg(BatteryStatus)
@@ -335,7 +350,8 @@ void secondFunction::postAll(QByteArray tmp_HardwareInfo)
             .arg(QString::fromLocal8Bit(BoxDownDoorOpenCount))
             .arg(SolarEnergyStatus)
             .arg(QString::fromLocal8Bit(SolarEnergyOutputVoltage))
-            .arg(QString::fromLocal8Bit(SolarEnergyOutputCurrent));
+            .arg(QString::fromLocal8Bit(SolarEnergyOutputCurrent))
+            .arg(QString::fromLocal8Bit(AmmeterValue));
     qDebug()<<"post_url:"<<post_url;
     qDebug()<<"SolarEnergyOutputVoltage:"<<SolarEnergyOutputVoltage;
     qDebug()<<"SolarEnergyOutputCurrent:"<<SolarEnergyOutputCurrent;
@@ -409,13 +425,17 @@ void secondFunction::slot_pubulic_timer()
     }
 
     countTimer++;
-    if(countTimer==1)
-        get_all_status();
 
-    if(countTimer==2)
+
+    if(countTimer%2==1)
     {
         //haertbeat
         heartBeatToNet();
+
+    }
+    if(countTimer==6)
+    {
+        get_all_status();
         countTimer=0;
     }
 

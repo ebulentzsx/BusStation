@@ -944,7 +944,7 @@ void GetHttpReturn::dealOneLine(BusLine newBus,int position)
     int tmepESN_Length=0;
     tmepESN_Length=newBus.ESN.length();
     if(tmepESN_Length<4)
-        info.append("NULL");
+        info.append(" NULL. ");
     else if(tmepESN_Length<5)
     {
         info.append(" ");
